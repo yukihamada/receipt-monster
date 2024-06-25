@@ -48,6 +48,7 @@ export default class MyDocument extends Document {
           <meta name="twitter:title" content="レシートモンスター - 経理をスマートに" />
           <meta name="twitter:description" content="レシートスキャンで経理をスマートに。証拠保管と会計処理を一度に実現。「レシートモンスター」で、ビジネスの効率化と透明性向上を。" />
           <meta name="twitter:image" content="https://doceater.io/og-image.webp" />
+          <link rel="icon" href="/favicon.ico" />
         </Head>
         <body>
           <Main />

@@ -77,7 +77,7 @@ const ReceiptMonsterApp: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('アップロードに失敗しました');
+        throw new Error('アッロードに失敗しました');
       }
 
       const data = await response.json();
@@ -175,6 +175,15 @@ const ReceiptMonsterApp: React.FC = () => {
           onAddReceiptClick={handleAddReceiptClick}
           addTimestamp={addTimestamp}
         />
+        <div className="image-container">
+          <Image
+            src={monsterState}
+            alt="Monster State"
+            width={150}
+            height={150}
+            className="monster-image"
+          />
+        </div>
       </main>
       <Footer />
     </div>

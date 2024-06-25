@@ -71,7 +71,7 @@ const MainContent: React.FC<MainContentProps> = ({
     if (isLoading) {
       setUploadProgress(0);
       progressInterval = setInterval(() => {
-        setUploadProgress((prev) => Math.min(prev + 100 / 250, 100)); // 25秒で100%になるように設定
+        setUploadProgress((prev) => Math.min(prev + 100 / 200, 100)); // 20秒で100%になるように設定
       }, 100);
 
       messageInterval = setInterval(() => {
