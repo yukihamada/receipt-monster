@@ -130,7 +130,7 @@ const Introduction: React.FC = () => (
                 レシートモンスターはオープンソースプロジェクトです。詳細な技術情報や貢献方法については、GitHubリポジトリをご覧ください。
               </p>
               <div className="text-center mt-4">
-                <a href="https://github.com/your-repo" className="inline-block bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-300">
+                <a href="https://github.com/yukihamada/receipt-monster" className="inline-block bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-300">
                   GitHubリポジトリを見る
                 </a>
               </div>
