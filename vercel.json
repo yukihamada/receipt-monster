@@ -1,0 +1,18 @@
+{
+  "functions": {
+    "pages/api/auth/[...auth0].ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "pages/api/process-receipt.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/pages/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
+}
