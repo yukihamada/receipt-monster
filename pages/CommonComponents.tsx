@@ -73,7 +73,7 @@ export const Footer: React.FC = () => (
       </ul>
     </nav>
     <p>
-      <a href="https://github.com/yukihamada/nextreceipt" className="flex items-center justify-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm">
+      <a href="https://github.com/yukihamada/receipt-monster" className="flex items-center justify-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm">
         <FaGithub className="mr-1" />オープンソースプロジェクトはこちら
       </a>
     </p>
