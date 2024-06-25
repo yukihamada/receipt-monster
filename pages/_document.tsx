@@ -32,11 +32,15 @@ export default class MyDocument extends Document {
     return (
       <Html lang="ja">
         <Head>
+          <title>レシートモンスター - 経理をスマートに</title>
+          <meta name="description" content="レシートスキャンで経理をスマートに。証拠保管と会計処理を一度に実現。「レシートモンスター」で、ビジネスの効率化と透明性向上を。" />
+          <meta name="keywords" content="レシート, 経理, スキャン, ビジネス, 効率化" />
+          <meta name="author" content="レシートモンスター" />
           <meta property="og:title" content="レシートモンスター - 経理をスマートに" />
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://doceater.io" />
           <meta property="og:image" content="https://doceater.io/og-image.webp" />
-          <meta property="og:description" content="レシートスキャンで経理をスマートに。��拠保管と会計処理を一度に実現。「レシートモンスター」で、ビジネスの効率化と透明性向上を。" />
+          <meta property="og:description" content="レシートスキャンで経理をスマートに。証拠保管と会計処理を一度に実現。「レシートモンスター」で、ビジネスの効率化と透明性向上を。" />
           <meta property="og:site_name" content="レシートモンスター" />
           <meta property="og:locale" content="ja_JP" />
           <meta name="twitter:card" content="summary_large_image" />
