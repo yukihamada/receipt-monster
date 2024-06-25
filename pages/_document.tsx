@@ -9,7 +9,7 @@ export default class MyDocument extends Document {
     try {
       ctx.renderPage = () =>
         originalRenderPage({
-          enhanceApp: (App) => (props) =>
+          enhanceApp: (App: any) => (props) =>
             sheet.collectStyles(<App {...props} />),
         });
 
@@ -30,9 +30,8 @@ export default class MyDocument extends Document {
 
   render() {
     return (
-      <Html lang="ja">
+      <Html>
         <Head>
-          <title>レシートモンスター - 経理をスマートに</title>
           <meta name="description" content="レシートスキャンで経理をスマートに。証拠保管と会計処理を一度に実現。「レシートモンスター」で、ビジネスの効率化と透明性向上を。" />
           <meta name="keywords" content="レシート, 経理, スキャン, ビジネス, 効率化" />
           <meta name="author" content="レシートモンスター" />
@@ -40,7 +39,7 @@ export default class MyDocument extends Document {
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://doceater.io" />
           <meta property="og:image" content="https://doceater.io/og-image.webp" />
-          <meta property="og:description" content="レシートスキャンで経理をスマートに。証拠保管と会計処理を一度に実現。「レシートモンスター」で、ビジネスの効率化と透明性向上を。" />
+          <meta property="og:description" content="レシートスキャン経理をスマートに。証拠保管と会計処理を一度に実現。「レシートモンスター」で、ビジネスの効率化と透明性向上を。" />
           <meta property="og:site_name" content="レシートモンスター" />
           <meta property="og:locale" content="ja_JP" />
           <meta name="twitter:card" content="summary_large_image" />
@@ -48,7 +47,6 @@ export default class MyDocument extends Document {
           <meta name="twitter:title" content="レシートモンスター - 経理をスマートに" />
           <meta name="twitter:description" content="レシートスキャンで経理をスマートに。証拠保管と会計処理を一度に実現。「レシートモンスター」で、ビジネスの効率化と透明性向上を。" />
           <meta name="twitter:image" content="https://doceater.io/og-image.webp" />
-          <link rel="icon" href="/favicon.ico" />
         </Head>
         <body>
           <Main />

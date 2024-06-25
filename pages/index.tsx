@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Footer, Header, labels, uploadMessages, Receipt } from './CommonComponents';
 import MainContent from './MainContent';
 import Image from 'next/image';
+import Head from 'next/head';
 
 // 型定義は変更なし
 
@@ -86,7 +87,7 @@ const ReceiptMonsterApp: React.FC = () => {
       // Cloudflareから返された画像URLを使用
       const cloudflareImageUrl = data.imageUrl;
 
-      // 合計額設定
+      // 合計額���定
       if (data.amount) {
         setTotalAmount(data.amount.toString());
       }
@@ -156,37 +157,42 @@ const ReceiptMonsterApp: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col transition-colors duration-300 bg-gray-100 text-gray-900">
-      <Header />
-      <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8">
-        <MainContent 
-          result={result}
-          totalAmount={totalAmount}
-          monsterState={monsterState}
-          isLoading={isLoading}
-          handleImageUpload={handleImageUpload}
-          editReceipt={editReceipt}
-          getLabel={getLabel}
-          renderValue={renderValue}
-          savedReceipts={savedReceipts}
-          deleteReceipt={deleteReceipt}
-          currentMessage={currentMessage}
-          isLoggedIn={isLoggedIn}
-          onAddReceiptClick={handleAddReceiptClick}
-          addTimestamp={addTimestamp}
-        />
-        <div className="image-container">
-          <Image
-            src={monsterState}
-            alt="Monster State"
-            width={150}
-            height={150}
-            className="monster-image"
+    <>
+      <Head>
+        <title>レシートモンスター - 経理をスマートに</title>
+      </Head>
+      <div className="min-h-screen flex flex-col transition-colors duration-300 bg-gray-100 text-gray-900">
+        <Header />
+        <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8">
+          <MainContent 
+            result={result}
+            totalAmount={totalAmount}
+            monsterState={monsterState}
+            isLoading={isLoading}
+            handleImageUpload={handleImageUpload}
+            editReceipt={editReceipt}
+            getLabel={getLabel}
+            renderValue={renderValue}
+            savedReceipts={savedReceipts}
+            deleteReceipt={deleteReceipt}
+            currentMessage={currentMessage}
+            isLoggedIn={isLoggedIn}
+            onAddReceiptClick={handleAddReceiptClick}
+            addTimestamp={addTimestamp}
           />
-        </div>
-      </main>
-      <Footer />
-    </div>
+          <div className="image-container">
+            <Image
+              src={monsterState}
+              alt="Monster State"
+              width={150}
+              height={150}
+              className="monster-image"
+            />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    </>
   );
 };
 

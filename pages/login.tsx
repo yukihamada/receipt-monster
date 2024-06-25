@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Head from 'next/head';
 import { Footer, Header } from './CommonComponents';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/router';
@@ -29,6 +30,9 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 text-gray-900">
+      <Head>
+        <title>ログイン</title>
+      </Head>
       <Header />
       <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
