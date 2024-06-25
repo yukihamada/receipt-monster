@@ -143,6 +143,14 @@ const ReceiptMonsterApp: React.FC = () => {
     return key as string;
   };
 
+  const handleAddReceiptClick = () => {
+    document.getElementById('fileInput')?.click();
+  };
+
+  const addTimestamp = () => {
+    // タイムスタンプを追加するロジック
+  };
+
   if (!isClient) {
     return null; // クライアントサイドでのみレンダリング
   }
@@ -164,6 +172,8 @@ const ReceiptMonsterApp: React.FC = () => {
           deleteReceipt={deleteReceipt}
           currentMessage={currentMessage}
           isLoggedIn={isLoggedIn}
+          onAddReceiptClick={handleAddReceiptClick}
+          addTimestamp={addTimestamp}
         />
       </main>
       <Footer />
@@ -172,4 +182,3 @@ const ReceiptMonsterApp: React.FC = () => {
 };
 
 export default ReceiptMonsterApp;
-

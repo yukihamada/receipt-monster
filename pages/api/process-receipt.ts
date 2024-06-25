@@ -6,6 +6,7 @@ import sharp from 'sharp';
 import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -47,6 +48,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           processedImage = buffer;
         }
 
+        // ファイルのハッシュを生成
+        const hash = crypto.createHash('sha256').update(processedImage).digest('hex');
+
         // Cloudflareに画像をアップロード
         const imageUrl = await uploadToCloudflare(processedImage, image.originalFilename ?? 'default_filename.jpg');
 
@@ -58,14 +62,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         • 但し書き（支払いが行われた商品やサービスの取引内容）
         • 発行者名（領収書を発行する事業者の名前）
         • 発行者の住所・連絡先
-        • 発者の登録番号（法人番号など）
+        • 発者の登録番号（法人番号など
         • 税区分（消費税など）
         • 軽減税率の適用（該当する場合）
         • 通し番号（透明性を高めるために推奨）
         • 画像の正しい向きについても教えてください。時計回りをプラスとして文字を読むのに紙の回転が必要な角度(0,90,-90,-180)
         
         領収書の写真でない場合には、以下のように返答してください。
-        • [NORYOSHUSHO]: 領収書の写真ではありませんと描いた上で写真の中身を詳細に説明してください。
+        • [NORYOSHUSHO]: 領収書の写真ではありませんと描いた上で写真の中身を詳に説明してください。
         `
         
         
@@ -73,8 +77,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const result = await processWithGPT4(imageUrl, prompt);
 
-        // imageUrlをresultに追加
-        const finalResult = { ...result, imageUrl };
+        // imageUrlとhashをresultに追加
+        const uploadTime = new Date().toISOString();
+        const finalResult = { ...result, imageUrl, hash, uploadTime };
 
         return res.status(200).json(finalResult);
       } catch (error) {
@@ -153,7 +158,7 @@ async function processWithGPT4(imageUrl: string, prompt: string): Promise<any> {
     "registrationNumber": "123456", // 発行者の登録番号（法人番号など）
     "taxCategory": "10%", // 税区分（消費税など）
     "reducedTaxRate": "適用なし", // 軽減税率の適用（該当する場合）
-    "serialNumber": "0001", // 通し番号（透明性を高めるために推奨）
+    "serialNumber": "0001", // 通し番���（透明性を高めるために推奨）
     "imageOrientation": "-90" // 画像の向き
     "noryoshusho": "" // 領収書の写真でない場合には、noryoshushoに写真の詳細を描いてください
   }: ${response1.choices[0].message.content}`;

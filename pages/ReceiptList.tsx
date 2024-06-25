@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Edit2, PlusCircle } from 'lucide-react';
+import { Trash2, Edit2, PlusCircle, Clock } from 'lucide-react';
 import Image from 'next/image';
 import { Receipt, labels } from './CommonComponents';
 
@@ -10,9 +10,11 @@ interface ReceiptListProps {
   editReceipt: (receipt: Receipt) => void;
   getLabel: (key: keyof Receipt) => string;
   renderValue: (value: any) => string;
+  addTimestamp: (receipt: Receipt) => void;
+  onAddReceiptClick: () => void;
 }
 
-const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt, editReceipt, getLabel, renderValue }) => {
+const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt, editReceipt, getLabel, renderValue, addTimestamp, onAddReceiptClick }) => {
   const safeSavedReceipts = savedReceipts || [];
   const sortedReceipts = [...safeSavedReceipts].sort((a, b) => 
     new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -24,8 +26,8 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
   useEffect(() => {
     const messages = [
       'レシートがないなんて、財布が軽くて幸せですね！',
-      '買い物しなくても幸せ？それとも忘れちゃった？',
-      'レシートゼロ。エコな生活素晴らしいです',
+      '買い物しなくても幸せ？それとゃった？',
+      'レシートゼロ。エコな生活らしいです',
       'レシートがないのは、宝くじに当たったからですか？',
       '無レシート生活、始めました？',
       '空っぽのレシート箱。想像力豊かな買い物の時間です！',
@@ -71,30 +73,55 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
             alt="Receipt image"
             width={200}
             height={200}
-            className="rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
+            className="rounded-lg shadow-md transition-transform duration-300 hover:scale-105 max-h-48 object-contain"
             style={{ transform: `rotate(${receipt.imageOrientation}deg)` }}
           />
         </div>
       )}
-      {receipt.noryoshusho ? (
-        <div className="mt-4">
-          <p className="font-medium">写真の内容:</p>
-          <p>{receipt.noryoshusho}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-2">
-          {Object.entries(receipt)
-            .filter(([key]) => !['id', 'timestamp', 'imageUrl', 'imageOrientation', 'noryoshusho'].includes(key))
-            .map(([key, value]) => (
-              <div key={`${receipt.id}-${key}`} className="flex justify-between">
-                <span className="font-medium">{getLabel(key as keyof Receipt)}:</span>
-                <span>{renderValue(value)}</span>
-              </div>
-            ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 gap-2">
+        {Object.entries(receipt)
+          .filter(([key]) => !['id', 'timestamp','issuer','amount', 'imageUrl', 'imageOrientation', 'noryoshusho'].includes(key))
+          .map(([key, value]) => (
+            <div key={`${receipt.id}-${key}`} className="flex justify-between">
+              <span className="font-medium whitespace-nowrap">{getLabel(key as keyof Receipt)}:</span>
+              <span className="truncate max-w-full overflow-x-auto">{renderValue(value)}</span>
+            </div>
+          ))}
+      </div>
     </>
   );
+
+  const addTimestampOnServer = async (receipt: Receipt) => {
+    try {
+      const response = await fetch('/api/add-timestamp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          fileHash: receipt.id,
+          blockchains: ['polygon', 'binance']
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('サーバーでエラーが発生しました');
+      }
+
+      const data = await response.json();
+      console.log('タイムスタンプが正常に追加されました:', data.results);
+    } catch (error) {
+      console.error('タイムスタンプの追加中にエラーが発生しました:', error);
+    }
+  };
+
+  useEffect(() => {
+    sortedReceipts.forEach(receipt => {
+      if (!receipt.timestamp) {
+        addTimestampOnServer(receipt);
+      }
+    });
+  }, [sortedReceipts]);
 
   return (
     <>
@@ -112,7 +139,7 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
           <UpgradeBanner receiptCount={sortedReceipts.length} />
         )}
         {sortedReceipts.length === 0 ? (
-          <EmptyState emptyMessage={emptyMessage} />
+          <EmptyState emptyMessage={emptyMessage} onAddReceiptClick={onAddReceiptClick} />
         ) : (
           <ul className="space-y-6">
             {sortedReceipts.map((receipt) => (
@@ -124,21 +151,24 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
                 renderReceiptContent={renderReceiptContent}
                 renderValue={renderValue}
                 getLabel={getLabel}
+                addTimestamp={addTimestamp}
               />
             ))}
           </ul>
         )}
       </motion.div>
-      <div className="text-center mt-6">
-        <a
-          href="/path/to/download"  // ダウンロードリンクをここに設定
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center"
-          download
-        >
-          <PlusCircle className="mr-2" />
-          データをダウンロード
-        </a>
-      </div>
+      {sortedReceipts.length > 0 && (
+        <div className="text-center mt-6">
+          <a
+            href="/path/to/download"  // ダウンロードリクをここに設定
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center"
+            download
+          >
+            <PlusCircle className="mr-2" />
+            データダウンロード
+          </a>
+        </div>
+      )}
     </>
   );
 };
@@ -146,11 +176,11 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
 const UpgradeBanner = ({ receiptCount }: { receiptCount: number }) => (
   <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-r-lg shadow" role="alert">
     <p className="font-bold">有料プランへのアップグレードをご検討ください</p>
-    <p>現在{receiptCount}件のレシートが保存されています。有料プランにアップグレードすると、最大1000件まで保存でま</p>
+    <p>現在{receiptCount}件のレシートが保存されています。有料プランにアップグレードすると、最大1000件まで保存できます。</p>
   </div>
 );
 
-const EmptyState = ({ emptyMessage }: { emptyMessage: string }) => (
+const EmptyState = ({ emptyMessage, onAddReceiptClick }: { emptyMessage: string, onAddReceiptClick: () => void }) => (
   <AnimatePresence mode="wait">
     <motion.div
       key={emptyMessage}
@@ -161,30 +191,31 @@ const EmptyState = ({ emptyMessage }: { emptyMessage: string }) => (
       className="p-6 rounded-lg shadow-lg bg-white text-center"
     >
       <p className="text-xl font-medium text-gray-700 mb-4">{emptyMessage}</p>
-      <AddReceiptButton />
+      <AddReceiptButton onClick={onAddReceiptClick} />
     </motion.div>
   </AnimatePresence>
 );
 
-const AddReceiptButton = () => (
+const AddReceiptButton = ({ onClick }: { onClick: () => void }) => (
   <motion.button
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
     className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center"
-    onClick={() => {/* レシート追加ロジック */}}
+    onClick={onClick}
   >
     <PlusCircle className="mr-2" />
-    新しいレシートを追加
+    新しいレシートの追加
   </motion.button>
 );
 
-const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent, renderValue, getLabel }: {
+const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent, renderValue, getLabel, addTimestamp }: {
   receipt: Receipt;
   editReceipt: (receipt: Receipt) => void;
   deleteReceipt: (id: string) => void;
   renderReceiptContent: (receipt: Receipt) => React.ReactNode;
   renderValue: (value: any) => string;
   getLabel: (key: keyof Receipt) => string;
+  addTimestamp: (receipt: Receipt) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -195,10 +226,12 @@ const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
       className="bg-white p-6 rounded-lg shadow-md relative hover:shadow-lg transition-shadow duration-300"
+      style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 20px), 0 100%)' }}
     >
       <div className="absolute top-2 right-2 space-x-2">
         <ActionButton icon={Edit2} onClick={() => editReceipt(receipt)} tooltip="編集" />
         <ActionButton icon={Trash2} onClick={() => deleteReceipt(receipt.id)} tooltip="削除" />
+        <ActionButton icon={Clock} onClick={() => addTimestamp(receipt)} tooltip="タイムスタンプを追加" />
       </div>
       <h3 className="text-lg font-semibold mb-4">{receipt.issuer || '店舗名なし'}</h3>
       <div className="flex justify-between">
@@ -217,14 +250,6 @@ const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent
       </button>
       {isOpen && (
         <div className="mt-4 space-y-2">
-          {Object.entries(receipt)
-            .filter(([key]) => !['id', 'timestamp', 'imageUrl', 'imageOrientation', 'noryoshusho', 'amount', 'issuer'].includes(key))
-            .map(([key, value]) => (
-              <div key={`${receipt.id}-${key}`} className="flex justify-between">
-                <span className="font-medium">{getLabel(key as keyof Receipt)}:</span>
-                <span>{renderValue(value)}</span>
-              </div>
-            ))}
           {renderReceiptContent(receipt)}
         </div>
       )}

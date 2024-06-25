@@ -6,6 +6,7 @@ import ReceiptList from './ReceiptList';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUpload, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
+import { messages, loadingMessages } from './CommonComponents';
 
 interface MainContentProps {
   result: ReceiptType | null;
@@ -20,6 +21,8 @@ interface MainContentProps {
   deleteReceipt: (id: string) => void;
   currentMessage: string;
   isLoggedIn: boolean;
+  onAddReceiptClick: () => void;
+  addTimestamp: (receipt: ReceiptType) => void; // Added
 }
 
 interface ReceiptData {
@@ -28,38 +31,6 @@ interface ReceiptData {
   orientation?: number;
 }
 
-const messages = [
-  "レシートを食べて成長するモンスター、あなたの財布はスッキリ！",
-  "家計簿がゲームに？レシートモ��スターで楽しく節！",
-  "タイムスタンプ付きで安心、あなたの経費精算をサポート！",
-  "レシートの山、さようなら。デジタル管理で空間スッキリ！",
-  "モンスターと一緒に、楽しく家計管理。成長が見える喜び！",
-  "領収書の整理、もう悩まない。レシートモンスターにお任せ！",
-  "税務申告の味方、レシートモンスターでラクラク書類準備！",
-  "エコな暮らしへの第一歩、紙のレシートにさようなら！",
-  "ビジネスマンの強い味方、経費精算をスマートに！",
-  "レシートを撮って、モンスター育成。家計管理が楽しくなる！",
-  "大切な書類をしっかり保管、ブロックチェーンで安心管理！",
-  "家族で楽しむ家計管理、みんなでモンスター育成！",
-  "レシートの謎、AI が解読。家計の見える化をサポート！",
-  "財布の中身スッキリ、データはしっかり保管。一石二鳥の便利ツール！",
-  "毎日の買い物が冒険に？レシートモンスターで新しい体験を！",
-  "領収書の山に埋もれない、スマートな経理担当者になろう！",
-  "レシートを撮るたび、モンスターが進化。成長が楽しみにな家計管理！",
-  "書類とはおさらば、デジタルで安全に保管。未来型の文書管理！",
-  "家計のムダを発見！AI 分析でスマートな家計を実現！",
-  "レシートがモンスターのエサに？楽しみながら、賢く節約！"
-];
-
-const loadingMessages = [
-  "レシートを解析中...",
-  "AIがデータを読み取っています...",
-  "モンスターにエサをあげています...",
-  "家計簿を更新中...",
-  "領収書の山を整理しています...",
-  "経費精算の準備をしています...",
-  "レシートモンスターが進化中..."
-];
 
 const MainContent: React.FC<MainContentProps> = ({
   result,
@@ -74,6 +45,8 @@ const MainContent: React.FC<MainContentProps> = ({
   deleteReceipt,
   currentMessage,
   isLoggedIn,
+  onAddReceiptClick,
+  addTimestamp, // Added
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -81,11 +54,6 @@ const MainContent: React.FC<MainContentProps> = ({
   const [randomMessage, setRandomMessage] = useState(messages[0]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [currentLoadingMessage, setCurrentLoadingMessage] = useState(loadingMessages[0]);
-  const [timestamp, setTimestamp] = useState<string | null>(null);
-
-  const handleAddTimestamp = () => {
-    setTimestamp(new Date().toLocaleString());
-  };
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -155,53 +123,7 @@ const MainContent: React.FC<MainContentProps> = ({
   };
 
   const renderReceiptOrNoryoshusho = () => {
-    if (result?.noryoshusho) {
-      return (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="p-6 rounded-lg shadow-lg bg-white"
-        >
-          <h3 className="text-2xl font-bold mb-4 text-indigo-700">写真の内容</h3>
-          <div className="bg-gray-100 p-4 rounded-md overflow-x-auto">
-            <pre className="whitespace-pre-wrap text-sm">{JSON.stringify(result.noryoshusho, null, 2)}</pre>
-          </div>
-        </motion.div>
-      );
-    } else {
-      return (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="p-6 rounded-lg shadow-lg bg-white"
-        >
-          {Object.entries(isEditing ? (editedResult || {}) : (result || {})).map(([key, value]) => {
-            if (key !== 'imageUrl' && key !== 'orientation' && key !== 'noryoshusho') {
-              return (
-                <div key={key} className="mb-4">
-                  <span className="font-medium text-gray-700">{getLabel(key as keyof ReceiptType)}:</span>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={value as string}
-                      onChange={(e) => handleInputChange(key as keyof ReceiptType, e.target.value)}
-                      className="ml-2 border rounded px-2 py-1 w-full mt-1"
-                    />
-                  ) : (
-                    <span className="ml-2 text-gray-900">{renderValue(value)}</span>
-                  )}
-                </div>
-              );
-            }
-            return null;
-          })}
-          {renderReceiptImage()}
-          {renderEditButtons()}
-        </motion.div>
-      );
-    }
+    return null; // 処理結果の表示を削除
   };
 
   const renderReceiptImage = () => {
@@ -293,35 +215,6 @@ const MainContent: React.FC<MainContentProps> = ({
     </div>
   );
 
-  const addTimestampOnServer = async (fileHash: string) => {
-    if (!isLoggedIn) {
-      console.error('ユーザーがログインしていません');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/add-timestamp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          fileHash,
-          blockchains: ['polygon', 'ethereum', 'binance', 'solana']
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('サーバーでエラーが発生しました');
-      }
-
-      const data = await response.json();
-      console.log('タイムスタンプが正常に追加されました:', data.results);
-    } catch (error) {
-      console.error('タイムスタンプの追加中にエラーが発生しました:', error);
-    }
-  };
-
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <AnimatePresence mode="wait">
@@ -361,7 +254,6 @@ const MainContent: React.FC<MainContentProps> = ({
             objectFit="contain"
           />
         </StyledMotionDiv>
-
       </MotionDiv>
 
       {/* Modal */}
@@ -380,32 +272,14 @@ const MainContent: React.FC<MainContentProps> = ({
         </div>
       )}
 
-      {/* Result display */}
-      {result && (
-        <MotionDiv className="mb-8">
-          <h2 className="text-xl font-bold mb-4">処理結果</h2>
-          {renderReceiptOrNoryoshusho()}
-          {!isLoggedIn && (
-            <div className="mt-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-              <p>この書類にタイムスタンプを押すには登録が必要です。</p>
-              <Link href="/signup" legacyBehavior>
-                <a className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                  登録する
-                </a>
-              </Link>
-            </div>
-          )}
-        </MotionDiv>
-      )}
-
       {/* ローダーの表示位置を変更 */}
       {isLoading ? renderLoader() : (
         <div 
           {...getRootProps()}
           className={`p-6 border-2 border-dashed rounded-md mb-8 bg-white cursor-pointer ${isDragActive ? 'border-blue-500' : 'border-gray-300'}`}
         >
-          <input {...getInputProps()} />
-          <p className="text-center text-gray-500">{isDragActive ? 'こドロップしてください' : 'ここクリックするか、ファイルをドラッグ＆ドロップしてください'}</p>
+          <input {...getInputProps()} id="fileInput" style={{ display: 'none' }} />
+          <p className="text-center text-gray-500">{isDragActive ? 'ここにドロップしてください' : 'ここをクリックするか、ファイルをドラッグ＆ドロップしてください'}</p>
         </div>
       )}
 
@@ -416,10 +290,9 @@ const MainContent: React.FC<MainContentProps> = ({
         editReceipt={editReceipt}
         getLabel={getLabel}
         renderValue={renderValue}
+        onAddReceiptClick={onAddReceiptClick}
+        addTimestamp={addTimestamp} // Added
       />
-
-      <button onClick={handleAddTimestamp}>タイムスタンプを追加</button>
-      {timestamp && <div>タイムスタンプ: {timestamp}</div>}
     </div>
   );
 };
