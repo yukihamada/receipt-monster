@@ -25,7 +25,7 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
     const messages = [
       'レシートがないなんて、財布が軽くて幸せですね！',
       '買い物しなくても幸せ？それとも忘れちゃった？',
-      'レシートゼロ。エコな生活素晴らしいです！',
+      'レシートゼロ。エコな生活素晴らしいです',
       'レシートがないのは、宝くじに当たったからですか？',
       '無レシート生活、始めました？',
       '空っぽのレシート箱。想像力豊かな買い物の時間です！',
@@ -97,39 +97,56 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
   );
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-4xl mx-auto"
-    >
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">保存されたレシート</h2>
-      {sortedReceipts.length > 10 && (
-        <UpgradeBanner receiptCount={sortedReceipts.length} />
-      )}
-      {sortedReceipts.length === 0 ? (
-        <EmptyState emptyMessage={emptyMessage} />
-      ) : (
-        <ul className="space-y-6">
-          {sortedReceipts.map((receipt) => (
-            <ReceiptItem
-              key={receipt.id}
-              receipt={receipt}
-              editReceipt={editReceipt}
-              deleteReceipt={deleteReceipt}
-              renderReceiptContent={renderReceiptContent}
-            />
-          ))}
-        </ul>
-      )}
-    </motion.div>
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-4xl mx-auto p-4 bg-gray-50 rounded-lg shadow-lg"
+      >
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 flex items-center justify-center">
+          <PlusCircle className="mr-2" />
+          保存されたレシート
+        </h2>
+        {sortedReceipts.length > 10 && (
+          <UpgradeBanner receiptCount={sortedReceipts.length} />
+        )}
+        {sortedReceipts.length === 0 ? (
+          <EmptyState emptyMessage={emptyMessage} />
+        ) : (
+          <ul className="space-y-6">
+            {sortedReceipts.map((receipt) => (
+              <ReceiptItem
+                key={receipt.id}
+                receipt={receipt}
+                editReceipt={editReceipt}
+                deleteReceipt={deleteReceipt}
+                renderReceiptContent={renderReceiptContent}
+                renderValue={renderValue}
+                getLabel={getLabel}
+              />
+            ))}
+          </ul>
+        )}
+      </motion.div>
+      <div className="text-center mt-6">
+        <a
+          href="/path/to/download"  // ダウンロードリンクをここに設定
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center"
+          download
+        >
+          <PlusCircle className="mr-2" />
+          データをダウンロード
+        </a>
+      </div>
+    </>
   );
 };
 
 const UpgradeBanner = ({ receiptCount }: { receiptCount: number }) => (
   <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-r-lg shadow" role="alert">
     <p className="font-bold">有料プランへのアップグレードをご検討ください</p>
-    <p>現在{receiptCount}件のレシートが保存されています。有料プランにアップグレードすると、最大1000件まで保存できます。</p>
+    <p>現在{receiptCount}件のレシートが保存されています。有料プランにアップグレードすると、最大1000件まで保存でま</p>
   </div>
 );
 
@@ -161,27 +178,59 @@ const AddReceiptButton = () => (
   </motion.button>
 );
 
-const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent }: {
+const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent, renderValue, getLabel }: {
   receipt: Receipt;
   editReceipt: (receipt: Receipt) => void;
   deleteReceipt: (id: string) => void;
   renderReceiptContent: (receipt: Receipt) => React.ReactNode;
-}) => (
-  <motion.li
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -20 }}
-    transition={{ duration: 0.3 }}
-    className="bg-white p-6 rounded-lg shadow-md relative hover:shadow-lg transition-shadow duration-300"
-  >
-    <div className="absolute top-2 right-2 space-x-2">
-      <ActionButton icon={Edit2} onClick={() => editReceipt(receipt)} tooltip="編集" />
-      <ActionButton icon={Trash2} onClick={() => deleteReceipt(receipt.id)} tooltip="削除" />
-    </div>
-    <h3 className="text-lg font-semibold mb-4">{receipt.storeName || '店舗名なし'}</h3>
-    {renderReceiptContent(receipt)}
-  </motion.li>
-);
+  renderValue: (value: any) => string;
+  getLabel: (key: keyof Receipt) => string;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <motion.li
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white p-6 rounded-lg shadow-md relative hover:shadow-lg transition-shadow duration-300"
+    >
+      <div className="absolute top-2 right-2 space-x-2">
+        <ActionButton icon={Edit2} onClick={() => editReceipt(receipt)} tooltip="編集" />
+        <ActionButton icon={Trash2} onClick={() => deleteReceipt(receipt.id)} tooltip="削除" />
+      </div>
+      <h3 className="text-lg font-semibold mb-4">{receipt.issuer || '店舗名なし'}</h3>
+      <div className="flex justify-between">
+        <span className="font-medium">金額:</span>
+        <span>{renderValue(receipt.amount)}</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="font-medium">発行者:</span>
+        <span>{renderValue(receipt.issuer)}</span>
+      </div>
+      <button
+        className="text-blue-500 mt-2 underline"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? '詳細を隠す' : '詳細を見る'}
+      </button>
+      {isOpen && (
+        <div className="mt-4 space-y-2">
+          {Object.entries(receipt)
+            .filter(([key]) => !['id', 'timestamp', 'imageUrl', 'imageOrientation', 'noryoshusho', 'amount', 'issuer'].includes(key))
+            .map(([key, value]) => (
+              <div key={`${receipt.id}-${key}`} className="flex justify-between">
+                <span className="font-medium">{getLabel(key as keyof Receipt)}:</span>
+                <span>{renderValue(value)}</span>
+              </div>
+            ))}
+          {renderReceiptContent(receipt)}
+        </div>
+      )}
+    </motion.li>
+  );
+};
 
 const ActionButton = ({ icon: Icon, onClick, tooltip }: { icon: React.ElementType, onClick: () => void, tooltip: string }) => (
   <motion.button

@@ -30,7 +30,7 @@ interface ReceiptData {
 
 const messages = [
   "レシートを食べて成長するモンスター、あなたの財布はスッキリ！",
-  "家計簿がゲームに？レシートモンスターで楽しく節約！",
+  "家計簿がゲームに？レシートモ��スターで楽しく節！",
   "タイムスタンプ付きで安心、あなたの経費精算をサポート！",
   "レシートの山、さようなら。デジタル管理で空間スッキリ！",
   "モンスターと一緒に、楽しく家計管理。成長が見える喜び！",
@@ -46,7 +46,7 @@ const messages = [
   "毎日の買い物が冒険に？レシートモンスターで新しい体験を！",
   "領収書の山に埋もれない、スマートな経理担当者になろう！",
   "レシートを撮るたび、モンスターが進化。成長が楽しみにな家計管理！",
-  "紙の書類とはおさらば、デジタルで安全に保管。未来型の文書管理！",
+  "書類とはおさらば、デジタルで安全に保管。未来型の文書管理！",
   "家計のムダを発見！AI 分析でスマートな家計を実現！",
   "レシートがモンスターのエサに？楽しみながら、賢く節約！"
 ];
@@ -81,6 +81,11 @@ const MainContent: React.FC<MainContentProps> = ({
   const [randomMessage, setRandomMessage] = useState(messages[0]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [currentLoadingMessage, setCurrentLoadingMessage] = useState(loadingMessages[0]);
+  const [timestamp, setTimestamp] = useState<string | null>(null);
+
+  const handleAddTimestamp = () => {
+    setTimestamp(new Date().toLocaleString());
+  };
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -98,7 +103,7 @@ const MainContent: React.FC<MainContentProps> = ({
     if (isLoading) {
       setUploadProgress(0);
       progressInterval = setInterval(() => {
-        setUploadProgress((prev) => Math.min(prev + 100 / 150, 100)); // 15秒で100%になるように設定
+        setUploadProgress((prev) => Math.min(prev + 100 / 250, 100)); // 25秒で100%になるように設定
       }, 100);
 
       messageInterval = setInterval(() => {
@@ -232,7 +237,7 @@ const MainContent: React.FC<MainContentProps> = ({
             onClick={handleSave}
             className="flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-300"
           >
-            <FaSave className="mr-2" /> 保���
+            <FaSave className="mr-2" /> 保存
           </button>
           <button 
             onClick={handleCancel}
@@ -255,61 +260,67 @@ const MainContent: React.FC<MainContentProps> = ({
   };
 
   const renderLoader = () => (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-    >
-      <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-        <div className="mb-4">
-          <motion.div
-            animate={{
-              scale: [1, 1.2, 1],
-              rotate: [0, 360],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="w-24 h-24 mx-auto"
-          >
-            <FaUpload className="w-full h-full text-blue-500" />
-          </motion.div>
-        </div>
-        <motion.p
-          key={currentLoadingMessage}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
+    <div className="mb-8 p-6 bg-white rounded-lg shadow-md">
+      <motion.p
+        key={currentLoadingMessage}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.5 }}
+        className="text-lg font-semibold mb-4 text-center"
+      >
+        {currentLoadingMessage}
+      </motion.p>
+      <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+        <motion.div
+          className="h-full bg-blue-500"
+          initial={{ width: "0%" }}
+          animate={{ width: `${uploadProgress}%` }}
           transition={{ duration: 0.5 }}
-          className="text-lg font-semibold mb-2"
-        >
-          {currentLoadingMessage}
-        </motion.p>
-        <div className="w-64 h-4 bg-gray-200 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-blue-500"
-            initial={{ width: "0%" }}
-            animate={{ width: `${uploadProgress}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
-        <p className="mt-2">{Math.round(uploadProgress)}%</p>
-        {currentMessage && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="mt-4 text-sm text-gray-600"
-          >
-            {currentMessage}
-          </motion.p>
-        )}
+        />
       </div>
-    </motion.div>
+      <p className="mt-2 text-center">{Math.round(uploadProgress)}%</p>
+      {currentMessage && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="mt-4 text-sm text-gray-600 text-center"
+        >
+          {currentMessage}
+        </motion.p>
+      )}
+    </div>
   );
+
+  const addTimestampOnServer = async (fileHash: string) => {
+    if (!isLoggedIn) {
+      console.error('ユーザーがログインしていません');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/add-timestamp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          fileHash,
+          blockchains: ['polygon', 'ethereum', 'binance', 'solana']
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('サーバーでエラーが発生しました');
+      }
+
+      const data = await response.json();
+      console.log('タイムスタンプが正常に追加されました:', data.results);
+    } catch (error) {
+      console.error('タイムスタンプの追加中にエラーが発生しました:', error);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -331,7 +342,7 @@ const MainContent: React.FC<MainContentProps> = ({
       {/* Total amount display */}
       {totalAmount && (
         <div className="text-2xl font-bold mb-4 text-center">
-          スキャンされた合計金額: {totalAmount}円
+          スキャンされた合計金額: {totalAmount}
         </div>
       )}
 
@@ -387,18 +398,16 @@ const MainContent: React.FC<MainContentProps> = ({
         </MotionDiv>
       )}
 
-      {/* File upload area */}
-      {!isLoading && (
+      {/* ローダーの表示位置を変更 */}
+      {isLoading ? renderLoader() : (
         <div 
           {...getRootProps()}
           className={`p-6 border-2 border-dashed rounded-md mb-8 bg-white cursor-pointer ${isDragActive ? 'border-blue-500' : 'border-gray-300'}`}
         >
           <input {...getInputProps()} />
-          <p className="text-center text-gray-500">{isDragActive ? 'ここにドロップしてください' : 'ここをクリックするか、ファイルをドラッグ＆ドロップしてください'}</p>
+          <p className="text-center text-gray-500">{isDragActive ? 'こドロップしてください' : 'ここクリックするか、ファイルをドラッグ＆ドロップしてください'}</p>
         </div>
       )}
-
-      {isLoading && renderLoader()}
 
       {/* Receipt list */}
       <ReceiptList 
@@ -408,6 +417,9 @@ const MainContent: React.FC<MainContentProps> = ({
         getLabel={getLabel}
         renderValue={renderValue}
       />
+
+      <button onClick={handleAddTimestamp}>タイムスタンプを追加</button>
+      {timestamp && <div>タイムスタンプ: {timestamp}</div>}
     </div>
   );
 };
