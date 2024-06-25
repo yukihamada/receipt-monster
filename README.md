@@ -85,6 +85,6 @@
 
 レシートモンスターはVercel上で簡単にデプロイできます。以下のリンクを使用して、ワンクリックでデプロイを行ってください。
 
-[![デプロイ](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/receipt-monster)
+[![デプロイ](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yukihamada/receipt-monster)
 
 以上の手順で、レシートモンスターを簡単にセットアップし、重要書類のデジタル管理を始めることができます。
