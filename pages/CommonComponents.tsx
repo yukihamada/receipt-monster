@@ -70,6 +70,7 @@ export const Footer: React.FC = () => (
         <li><Link href="/contact" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaEnvelope className="mr-1" />お問い合わせ</a></Link></li>
         <li><Link href="/privacy-policy" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaLock className="mr-1" />プライバシーポリシー</a></Link></li>
         <li><Link href="/terms-of-service" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaFileContract className="mr-1" />利用規約</a></Link></li>
+        <li><Link href="/blog" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaInfoCircle className="mr-1" />開発ブログ</a></Link></li>
       </ul>
     </nav>
     <p>
