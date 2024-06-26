@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getFirestore } from 'firebase-admin/firestore';
-import { getApps } from 'firebase-admin/app'; // 修正: 'firebase-admin/app' から 'getApps' をインポート
+import { getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, applicationDefault } from 'firebase-admin/app';
-import Stripe from 'stripe'; // 修正: 'stripe' モジュールの型宣言をインポート
-import { Stripe as StripeType } from 'stripe'; // 追加: 型宣言のインポート
+import Stripe from 'stripe';
+import { Stripe as StripeType } from 'stripe';
 
 const stripe: StripeType = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2024-06-20', // 修正: APIバージョンを更新
+  apiVersion: '2024-06-20',
 });
 
 if (!getApps().length) {
@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       customer: customerId,
       line_items: [
         {
-          price: 'your-price-id',
+          price: 'prod_QMR42USorUmxNS',
           quantity: 1,
         },
       ],
@@ -53,7 +53,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     res.status(200).json({ sessionId: session.id });
-  } catch (error: any) { // 修正: 'error' の型を 'any' に指定
-    res.status(500).json({ error: (error as Error).message }); // 修正: 'error' を 'Error' 型にキャスト
+  } catch (error: any) {
+    console.error('エラー詳細:', error); // エラーログを追加
+    res.status(500).json({ error: (error as Error).message });
   }
 }

@@ -43,7 +43,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         let processedImage: Buffer;
 
         if (type?.mime === 'image/heic') {
-          processedImage = await convertHeicToJpeg(buffer);
+          try {
+            processedImage = await convertHeicToJpeg(buffer);
+          } catch (error) {
+            console.error('HEIC変換失敗:', error);
+            return res.status(500).json({ error: 'HEIC画像の変換に失敗しました: ' + (error as Error).message });
+          }
         } else {
           processedImage = buffer;
         }
@@ -93,11 +98,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-async function convertHeicToJpeg(buffer: Buffer): Promise<Buffer> {
-  return await sharp(buffer)
-    .jpeg()
-    .toBuffer();
-}
+const convertHeicToJpeg = async (inputBuffer: Buffer): Promise<Buffer> => {
+  try {
+    return await sharp(inputBuffer)
+      .toFormat('jpeg')
+      .toBuffer();
+  } catch (error) {
+    console.error('Error processing image:', error);
+    throw new Error('HEIC画像の変換中にエラーが発生しました: ' + (error as Error).message);
+  }
+};
 
 async function uploadToCloudflare(buffer: Buffer, filename: string): Promise<string> {
   const formData = new FormData();
@@ -153,12 +163,12 @@ async function processWithGPT4(imageUrl: string, prompt: string): Promise<any> {
     "amount": "50000", // 金額（取引における支払いの総額）
     "purpose": "業務用備品購入費として", // 但し書き（支払いが行われた商品やサービスの取引内容の要約）
     "issuer": "株式会社サンプル商事", // 発行名（領収書を発行する事業者の名前）
-    "issuerAddress": "東京都渋谷区1-1-1", // 発行者の住所・連絡先
+    "issuerAddress": "東京都渋谷区1-1-1", // 発行者の住所・絡先
     "issuerContact": "03-1234-5678", // 発行者の連絡先
     "registrationNumber": "123456", // 発行者の登録番号（法人番号など）
     "taxCategory": "10%", // 税区分（消費税など）
     "reducedTaxRate": "適用なし", // 軽減税率の適用（該当する場合）
-    "serialNumber": "0001", // 通し番���（透明性を高めるために推奨）
+    "serialNumber": "0001", // 通し番（透明性を高めるために推奨）
     "imageOrientation": "-90" // 画像の向き
     "noryoshusho": "" // 領収書の写真でない場合には、noryoshushoに写真の詳細を描いてください
   }: ${response1.choices[0].message.content}`;

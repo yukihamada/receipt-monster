@@ -57,10 +57,18 @@ const AccountPage: React.FC = () => {
         body: JSON.stringify({ token: await user.getIdToken() }),
       });
 
+      if (!response.ok) {
+        throw new Error('サーバーエラー: ' + response.statusText);
+      }
+
       const { sessionId } = await response.json();
       const stripe = await stripePromise;
       if (!stripe) {
         console.error('Stripeの初期化に失敗しました');
+        return;
+      }
+      if (!sessionId) {
+        console.error('セッションIDが取得できませんでした');
         return;
       }
       await stripe.redirectToCheckout({ sessionId });
@@ -91,7 +99,7 @@ const AccountPage: React.FC = () => {
                 onClick={handleSignOut}
                 className="bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 transition duration-300"
               >
-                ログアウト
+                ログアト
               </button>
             </div>
           </div>

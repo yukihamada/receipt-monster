@@ -47,6 +47,21 @@ export default class MyDocument extends Document {
           <meta name="twitter:title" content="レシートモンスター - 経理をスマートに" />
           <meta name="twitter:description" content="レシートスキャンで経理をスマートに。証拠保管と会計処理を一度に実現。「レシートモンスター」で、ビジネスの効率化と透明性向上を。" />
           <meta name="twitter:image" content="https://doceater.io/og-image.webp" />
+          {process.env.NODE_ENV !== 'development' && (
+            <>
+              <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_FIREBASE_APP_ID}`}></script>
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', '${process.env.NEXT_PUBLIC_FIREBASE_APP_ID}');
+                  `,
+                }}
+              />
+            </>
+          )}
         </Head>
         <body>
           <Main />

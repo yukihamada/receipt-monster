@@ -27,13 +27,6 @@ const ProjectStart: React.FC = () => {
         <p className="text-gray-300">
           今後のアップデートで、さらに多くの機能を追加していく予定です。ぜひご期待ください！
         </p>
-        <div className="text-right mt-6">
-          <Link href="/blog" legacyBehavior>
-            <a className="inline-flex items-center px-5 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium rounded-md hover:from-blue-600 hover:to-purple-700 transition-colors">
-              ブログに一覧に戻る <FaArrowRight className="ml-2" />
-            </a>
-          </Link>
-        </div>
       </article>
     </BlogLayout>
   );

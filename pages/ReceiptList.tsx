@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Edit2, PlusCircle, Clock } from 'lucide-react';
+import { Download, Trash2, Edit2, PlusCircle, Clock } from 'lucide-react';
 import Image from 'next/image';
 import { Receipt, labels } from './CommonComponents';
 
@@ -25,8 +25,8 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
 
   useEffect(() => {
     const messages = [
-      'レシートがないなんて、財布が軽くて幸せですね！',
-      '買い物しなくても幸せ？それとゃった？',
+      'レシートがないなんて、財布が軽くて幸せで���！',
+      '買い物しなも幸せ？それとゃった？',
       'レシートゼロ。エコな生活らしいです',
       'レシートがないのは、宝くじに当たったからですか？',
       '無レシート生活、始めました？',
@@ -91,37 +91,11 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
     </>
   );
 
-  const addTimestampOnServer = async (receipt: Receipt) => {
-    try {
-      const response = await fetch('/api/add-timestamp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          fileHash: receipt.id,
-          blockchains: ['polygon', 'binance']
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('サーバーでエラーが発生しました');
-      }
-
-      const data = await response.json();
-      console.log('タイムスタンプが正常に追加されました:', data.results);
-    } catch (error) {
-      console.error('タイムスタンプの追加中にエラーが発生しました:', error);
+  const handleDeleteReceipt = (id: string) => {
+    if (confirm('本当にこのレシートを削除しますか？')) {
+      deleteReceipt(id);
     }
   };
-
-  useEffect(() => {
-    sortedReceipts.forEach(receipt => {
-      if (!receipt.timestamp) {
-        addTimestampOnServer(receipt);
-      }
-    });
-  }, [sortedReceipts]);
 
   return (
     <>
@@ -147,7 +121,7 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
                 key={receipt.id}
                 receipt={receipt}
                 editReceipt={editReceipt}
-                deleteReceipt={deleteReceipt}
+                deleteReceipt={handleDeleteReceipt}
                 renderReceiptContent={renderReceiptContent}
                 renderValue={renderValue}
                 getLabel={getLabel}
@@ -160,11 +134,11 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
       {sortedReceipts.length > 0 && (
         <div className="text-center mt-6">
           <a
-            href="/path/to/download"  // ダウンロードリクをここに設定
+            href="/path/to/download"
             className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center"
             download
           >
-            <PlusCircle className="mr-2" />
+            <Download className="mr-2" />
             データダウンロード
           </a>
         </div>
@@ -219,6 +193,37 @@ const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const addCertificateOnServer = async (receipt: Receipt) => {
+    try {
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          fileHash: receipt.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('サーバーでエラーが発生しました');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'certificate.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      console.log('証明書が正常に取得されました');
+    } catch (error) {
+      console.error('証明書の取得中にエラーが発生しました:', error);
+    }
+  };
+
   return (
     <motion.li
       initial={{ opacity: 0, y: 20 }}
@@ -228,10 +233,10 @@ const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent
       className="bg-white p-6 rounded-lg shadow-md relative hover:shadow-lg transition-shadow duration-300"
       style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 20px), 0 100%)' }}
     >
-      <div className="absolute top-2 right-2 space-x-2">
+      <div className="absolute top-2 right-2 space-x-2 flex items-start">
         <ActionButton icon={Edit2} onClick={() => editReceipt(receipt)} tooltip="編集" />
         <ActionButton icon={Trash2} onClick={() => deleteReceipt(receipt.id)} tooltip="削除" />
-        <ActionButton icon={Clock} onClick={() => addTimestamp(receipt)} tooltip="タイムスタンプを追加" />
+        <ActionButton icon={Download} onClick={() => addCertificateOnServer(receipt)} tooltip="証明書を取得" />
       </div>
       <h3 className="text-lg font-semibold mb-4">{receipt.issuer || '店舗名なし'}</h3>
       <div className="flex justify-between">
