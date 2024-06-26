@@ -57,6 +57,14 @@ export default class MyDocument extends Document {
                     function gtag(){dataLayer.push(arguments);}
                     gtag('js', new Date());
                     gtag('config', '${process.env.NEXT_PUBLIC_FIREBASE_APP_ID}');
+                    // イベントトラッキング用の関数
+                    window.gtagEvent = function(action, category, label, value) {
+                      gtag('event', action, {
+                        event_category: category,
+                        event_label: label,
+                        value: value
+                      });
+                    }
                   `,
                 }}
               />

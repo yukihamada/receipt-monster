@@ -68,6 +68,7 @@ export const Footer: React.FC = () => (
         <li><Link href="/" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaHome className="mr-1" />ホーム</a></Link></li>
         <li><Link href="/services" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaServicestack className="mr-1" />サービス紹介</a></Link></li>
         <li><Link href="/contact" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaEnvelope className="mr-1" />お問い合わせ</a></Link></li>
+        <li><Link href="/price" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaInfoCircle className="mr-1" />料金</a></Link></li>
         <li><Link href="/privacy-policy" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaLock className="mr-1" />プライバシーポリシー</a></Link></li>
         <li><Link href="/terms-of-service" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaFileContract className="mr-1" />利用規約</a></Link></li>
         <li><Link href="/blog" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaInfoCircle className="mr-1" />開発ブログ</a></Link></li>
@@ -155,7 +156,7 @@ export const messages = [
   "レシートの謎、AI が解読。家計の見える化をサポート！",
   "財布の中身スッキリ、データはしっかり保管。一石二鳥の便利ツール！",
   "毎日の買い物が冒険に？レシートモンスターで新しい体験を！",
-  "領収書の山に埋もれない、スマートな経理担当者になろう！",
+  "領収書の山に埋もれない、スマ���トな経理担当者になろう！",
   "レシートを撮るたび、モンスターが進化。成長が楽しみにな家計管理！",
   "書類とはおさらば、デジタルで安全に保管。未来型の文書管理！",
   "家計のムダを発見！AI 分析でスマートな家計を実現！",

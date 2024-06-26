@@ -26,6 +26,10 @@ const Signup: React.FC = () => {
     setLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
+      // イベントトラッキングを追加
+      if (typeof window !== 'undefined' && window.gtagEvent) {
+        window.gtagEvent('signup', 'user', 'email_signup', 1);
+      }
       router.push('/');
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : '不明なエラーが発生しました');
@@ -38,6 +42,10 @@ const Signup: React.FC = () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
+      // イベントトラッキングを追加
+      if (typeof window !== 'undefined' && window.gtagEvent) {
+        window.gtagEvent('signup', 'user', 'google_signup', 1);
+      }
       router.push('/');
     } catch (error) {
       setError('Googleログインに失敗しました');
