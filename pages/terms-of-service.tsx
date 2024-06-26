@@ -4,7 +4,6 @@ import { Footer, Header } from './CommonComponents';
 
 const TermsOfService: React.FC = () => (
   <div className="min-h-screen flex flex-col transition-colors duration-300 bg-gray-100 text-gray-900">
-    <Header />
     <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-4">利用規約</h1>
@@ -64,7 +63,6 @@ const TermsOfService: React.FC = () => (
         <Link href="/" legacyBehavior><a className="text-blue-500 hover:underline">ホームに戻る</a></Link>
       </div>
     </main>
-    <Footer />
   </div>
 );
 

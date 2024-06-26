@@ -1,11 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
+import Head from 'next/head'; // 追加: Head コンポーネントのインポート
 import Image from 'next/image';
 import { Footer, Header } from './CommonComponents';
 
 const Introduction: React.FC = () => (
   <div className="min-h-screen flex flex-col transition-colors duration-300 bg-gray-100 text-gray-900">
-    <Header />
+    <Head>
+      <title>レシートモンスター - サービス紹介</title> {/* 追加: ページタイトル */}
+    </Head>
     <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto p-4 bg-gray-100 min-h-screen">
         <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
@@ -147,7 +150,6 @@ const Introduction: React.FC = () => (
         </div>
       </div>
     </main>
-    <Footer />
   </div>
 );
 

@@ -33,7 +33,6 @@ const Login: React.FC = () => {
       <Head>
         <title>ログイン</title>
       </Head>
-      <Header />
       <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
           <h1 className="text-3xl font-bold text-center">ログイン</h1>
@@ -87,7 +86,6 @@ const Login: React.FC = () => {
           </p>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

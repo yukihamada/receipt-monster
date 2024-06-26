@@ -162,7 +162,6 @@ const ReceiptMonsterApp: React.FC = () => {
         <title>レシートモンスター - 経理をスマートに</title>
       </Head>
       <div className="min-h-screen flex flex-col transition-colors duration-300 bg-gray-100 text-gray-900">
-        <Header />
         <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8">
           <MainContent 
             result={result}
@@ -180,17 +179,7 @@ const ReceiptMonsterApp: React.FC = () => {
             onAddReceiptClick={handleAddReceiptClick}
             addTimestamp={addTimestamp}
           />
-          <div className="image-container">
-            <Image
-              src={monsterState}
-              alt="Monster State"
-              width={150}
-              height={150}
-              className="monster-image"
-            />
-          </div>
         </main>
-        <Footer />
       </div>
     </>
   );

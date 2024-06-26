@@ -70,7 +70,57 @@
 4. 環境変数を設定します。`.env.local`ファイルを作成し、必要なAPIキーや設定を追加します。
 
     ```plaintext
-    OPENAI_API_KEY=your_openai_api_key
+OPENAI_API_KEY=your_openai_api_key
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_API_TOKEN=
+ANTHROPIC_API_KEY=
+
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+FIREBASE_MEASUREMENT_ID=
+
+FIREBASE_TYPE=
+FIREBASE_PROJECT_ID=
+FIREBASE_PRIVATE_KEY_ID=
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE ----\n"
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_CLIENT_ID=
+FIREBASE_AUTH_URI=
+FIREBASE_TOKEN_URI=
+FIREBASE_AUTH_PROVIDER_X509_CERT_URL=
+FIREBASE_CLIENT_X509_CERT_URL=
+FIREBASE_UNIVERSE_DOMAIN=googleapis.com
+
+# Polygon設定
+POLYGON_RPC_URL=https://polygon-rpc.com
+POLYGON_PRIVATE_KEY=your_polygon_private_key_here
+POLYGON_CONTRACT_ADDRESS=
+
+# Ethereum設定
+ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID
+ETHEREUM_PRIVATE_KEY=your_ethereum_private_key_here
+ETHEREUM_CONTRACT_ADDRESS=
+
+# Binance Smart Chain設定
+BINANCE_RPC_URL=https://bsc-dataseed.binance.org
+BINANCE_PRIVATE_KEY=
+BINANCE_CONTRACT_ADDRESS=0xabcdefabcdefabcdefabcdefabcdefabcdefabcd
+
+# Solana設定
+SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+SOLANA_PRIVATE_KEY=
+SOLANA_PROGRAM_ID=
+
+# その他の設定
+NODE_ENV=development
+
+# Stripe
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_********************************
+STRIPE_SECRET_KEY=sk_live_************************
     ```
 
 5. 開発サーバーを起動します。

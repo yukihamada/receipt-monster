@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Head from 'next/head'; // Added: Head component imported
 import { Footer, Header } from './CommonComponents';
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { useRouter } from 'next/router';
@@ -45,8 +46,10 @@ const Signup: React.FC = () => {
 
   return (
     <React.Fragment>
+      <Head>
+        <title>レシートモンスター - 新規登録</title> {/* Added: Page title */}
+      </Head>
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-100 to-purple-200 text-gray-900">
-        <Header />
         <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
             <h1 className="text-4xl font-extrabold text-center text-indigo-600">新規登録</h1>
@@ -126,7 +129,6 @@ const Signup: React.FC = () => {
             </p>
           </div>
         </main>
-        <Footer />
       </div>
     </React.Fragment>
   );
