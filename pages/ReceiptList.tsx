@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Trash2, Edit2, PlusCircle, Clock } from 'lucide-react';
 import Image from 'next/image';
 import { Receipt, labels } from './CommonComponents';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase'; // Firestoreのインスタンスをインポート
 
 interface ReceiptListProps {
   savedReceipts: Receipt[];
@@ -12,9 +14,14 @@ interface ReceiptListProps {
   renderValue: (value: any) => string;
   addTimestamp: (receipt: Receipt) => void;
   onAddReceiptClick: () => void;
+  isLoading: boolean;
+  uploadProgress: { [key: string]: number };
+  currentLoadingMessage: string;
+  currentMessage: string;
+  renderLoader: () => React.ReactNode;
 }
 
-const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt, editReceipt, getLabel, renderValue, addTimestamp, onAddReceiptClick }) => {
+const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt, editReceipt, getLabel, renderValue, addTimestamp, onAddReceiptClick, isLoading, uploadProgress, currentLoadingMessage, currentMessage, renderLoader }) => {
   const safeSavedReceipts = savedReceipts || [];
   const sortedReceipts = [...safeSavedReceipts].sort((a, b) => 
     new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -25,7 +32,7 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
 
   useEffect(() => {
     const messages = [
-      'レシートがないなんて、財布が軽くて幸せで���！',
+      'レシートがないなんて、財布が軽くて幸せで！',
       '買い物しなも幸せ？それとゃった？',
       'レシートゼロ。エコな生活らしいです',
       'レシートがないのは、宝くじに当たったからですか？',
@@ -99,6 +106,7 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
 
   return (
     <>
+      {isLoading && renderLoader()}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

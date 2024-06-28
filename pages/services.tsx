@@ -105,7 +105,7 @@ const Introduction: React.FC = () => (
               </div>
               <div className="bg-gray-100 p-4 rounded-lg">
                 <h3 className="text-lg font-semibold mb-2">Q: タイムスタンプとは何ですか？</h3>
-                <p className="text-gray-700">A: タイムスタンプとは、ある出来事が発生した日時を記録するためのデジタル情報です。レシ��トモンスターでは、信頼できる第三者機関とブロックチェーン技術を使用してタイムスタンプを生成し、データの透明性と改ざん防止を保証しています。</p>
+                <p className="text-gray-700">A: タイムスタンプとは、ある出来事が発生した日時を記録するためのデジタル情報です。レシートモンスターでは、信頼できる第三者機関とブロックチェーン技術を使用してタイムスタンプを生成し、データの透明性と改ざん防止を保証しています。</p>
               </div>
             </div>
             <div className="mb-12">

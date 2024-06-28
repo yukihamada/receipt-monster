@@ -30,9 +30,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(500).json({ error: 'Error parsing form' });
       }
 
-      const image = files.image as formidable.File | formidable.File[];
+      const image = Array.isArray(files.image) ? files.image[0] : files.image;
 
-      if (!image || Array.isArray(image)) {
+      if (!image) {
         return res.status(400).json({ error: 'Missing required fields: image' });
       }
 
@@ -67,7 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         • 但し書き（支払いが行われた商品やサービスの取引内容）
         • 発行者名（領収書を発行する事業者の名前）
         • 発行者の住所・連絡先
-        • 発者の登録番号（法人番号など
+        • 発者の登録番号（法人番号など）
         • 税区分（消費税など）
         • 軽減税率の適用（該当する場合）
         • 通し番号（透明性を高めるために推奨）
@@ -75,10 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         
         領収書の写真でない場合には、以下のように返答してください。
         • [NORYOSHUSHO]: 領収書の写真ではありませんと描いた上で写真の中身を詳に説明してください。
-        `
-        
-        
-        ;
+        `;
 
         const result = await processWithGPT4(imageUrl, prompt);
 
@@ -90,6 +87,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } catch (error) {
         console.error('Error processing image:', error as Error);
         return res.status(500).json({ error: (error as Error).message });
+      } finally {
+        fs.unlinkSync(image.filepath); // 一時ファ��を削除
       }
     });
   } else {
@@ -102,7 +101,7 @@ const convertHeicToJpeg = async (inputBuffer: Buffer): Promise<Buffer> => {
   try {
     return await sharp(inputBuffer)
       .toFormat('jpeg')
-      .toBuffer();
+      .toBuffer(); // 修正: toDataURL() を toBuffer() に変更
   } catch (error) {
     console.error('Error processing image:', error);
     throw new Error('HEIC画像の変換中にエラーが発生しました: ' + (error as Error).message);
@@ -189,5 +188,6 @@ async function processWithGPT4(imageUrl: string, prompt: string): Promise<any> {
     max_tokens: 1000,
   });
 
-  return JSON.parse(response2.choices[0].message?.content ?? '{}');
+  const result = JSON.parse(response2.choices[0].message?.content ?? '{}');
+  return result;
 }

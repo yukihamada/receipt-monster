@@ -7,6 +7,12 @@ import { Auth } from 'firebase/auth';
 import { auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
+declare global {
+  interface Window {
+    difyChatbotConfig: { token: string };
+  }
+}
+
 // isLoggedInプロップを追加
 export const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -75,7 +81,7 @@ export const Footer: React.FC = () => (
       </ul>
     </nav>
     <p>
-      <a href="https://github.com/yukihamada/receipt-monster" className="flex items-center justify-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm">
+      <a href="https://github.com/yukihamada/receipt-monster" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm">
         <FaGithub className="mr-1" />オープンソースプロジェクトはこちら
       </a>
     </p>
@@ -101,11 +107,11 @@ export const labels: Record<keyof Receipt, string> = {
   transactionDate: "取引日",
   recipient: "宛名",
   amount: "金額",
-  purpose: "但し書き",
-  issuer: "発行者名",
+  purpose: "目的",
+  issuer: "発行者",
   issuerAddress: "発行者の住所・連絡先",
   issuerContact: "発行者の連絡先",
-  registrationNumber: "発行者の登番号",
+  registrationNumber: "発���者の登番号",
   taxCategory: "税区分",
   reducedTaxRate: "軽減税率の適用",
   serialNumber: "通し番号",
@@ -116,7 +122,7 @@ export const labels: Record<keyof Receipt, string> = {
 
 export const uploadMessages: string[] = [
   "レシートモンスターへようそ！",
-  "このシステムはレシートを簡に理できます。",
+  "このシステムはレシートを簡に理できま。",
   "アップロード中です。少々お待ちください。",
   "レシートのデータを自動で読み取ります。",
   "アップロードが完了すると、結果が表示されます。",
@@ -144,7 +150,7 @@ export const messages = [
   "レシートを食べて成長するモンスター、あなたの財布はスッキリ！",
   "家計簿がゲームに？レシートモンスターで楽しく節約！",
   "タイムスタンプ付きで安心、あなたの経費精算をサポート！",
-  "レシートの山、さようなら。デジタル管理で空間スッキリ！",
+  "レシトの山、さようなら。デジタル管理で空間スッキリ！",
   "モンスターと一緒に、楽しく家計管理。成長が見える喜び！",
   "領収書の整理、もう悩まない。レシートモンスターにお任せ！",
   "税務申告の味方、レシートモンスターでラクラク書類準備！",
@@ -152,11 +158,11 @@ export const messages = [
   "ビジネスマンの強い味方、経費精算をスマートに！",
   "レシートを撮って、モンスター育成。家計管理が楽しくなる！",
   "大切な書類をしっかり保管、ブロックチェーンで安心管理！",
-  "家族で楽しむ家計管理、みんなでモンスター育成！",
-  "レシートの謎、AI が解読。家計の見える化をサポート！",
+  "族で楽しむ家計管理、みんなでモンスター育成！",
+  "シーの、AI が解読。家計の見える化をサポート！",
   "財布の中身スッキリ、データはしっかり保管。一石二鳥の便利ツール！",
-  "毎日の買い物が冒険に？レシートモンスターで新しい体験を！",
-  "領収書の山に埋もれない、スマ���トな経理担当者になろう！",
+  "��日の買い物が冒険に？レシートモンスターで新しい体験を！",
+  "領収書の山に埋もれない、スマトな経理担当者になろう！",
   "レシートを撮るたび、モンスターが進化。成長が楽しみにな家計管理！",
   "書類とはおさらば、デジタルで安全に保管。未来型の文書管理！",
   "家計のムダを発見！AI 分析でスマートな家計を実現！",
@@ -173,4 +179,42 @@ export const loadingMessages = [
   "レシートモンスターが進化中..."
 ];
 
-export default Header;
+const CommonComponents: React.FC = () => {
+  useEffect(() => {
+    window.difyChatbotConfig = {
+      token: 'EtrfnS1CbiORg2lt'
+    };
+
+    const script = document.createElement('script');
+    script.src = "https://udify.app/embed.min.js";
+    script.id = "EtrfnS1CbiORg2lt";
+    script.defer = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  return (
+    <>
+      <Header />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.difyChatbotConfig = {
+              token: 'EtrfnS1CbiORg2lt'
+            };
+          `,
+        }}
+      />
+      <script
+        src="https://udify.app/embed.min.js"
+        id="EtrfnS1CbiORg2lt"
+        defer
+      />
+    </>
+  );
+};
+
+export default CommonComponents;

@@ -1,13 +1,26 @@
 import { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
 import './globals.css';
-import { Header, Footer } from './CommonComponents';
+import AdminLayout from './admin/AdminLayout';
+import Header, { Footer } from './CommonComponents';
 
-export default function App({ Component, pageProps }: AppProps) {
-  return (
+function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
+  // 管理画面のパスを判定
+  const isAdmin = router.pathname.startsWith('/admin');
+
+  return isAdmin ? (
+    <AdminLayout>
+      <Component {...pageProps} />
+    </AdminLayout>
+  ) : (
     <>
       <Header />
-      <Component {...pageProps} />
+        <Component {...pageProps} />
       <Footer />
     </>
   );
 }
+
+export default MyApp;
