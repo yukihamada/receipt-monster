@@ -11,6 +11,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'doceater.io',
       },
+      {
+        protocol: 'https',
+        hostname: 'imagedelivery.net',
+     },
     ],
   },
   webpack: (config) => {

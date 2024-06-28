@@ -83,17 +83,17 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
             width={200}
             height={200}
             className="rounded-lg shadow-md transition-transform duration-300 hover:scale-105 max-h-48 object-contain"
-            style={{ transform: `rotate(${receipt.imageOrientation}deg)` }}
+            style={{ transform: `rotate(${receipt.imageOrientation}deg)`, width: 'auto', height: 'auto' }}
           />
         </div>
       )}
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-1 gap-4">
         {Object.entries(receipt)
-          .filter(([key]) => !['id', 'timestamp','issuer','amount', 'imageUrl', 'imageOrientation', 'noryoshusho'].includes(key))
+          .filter(([key]) => !['id', 'timestamp', 'issuer', 'amount', 'imageUrl', 'imageOrientation', 'noryoshusho', 'userId', 'hash'].includes(key))
           .map(([key, value]) => (
-            <div key={`${receipt.id}-${key}`} className="flex justify-between">
-              <span className="font-medium whitespace-nowrap">{getLabel(key as keyof Receipt)}:</span>
-              <span className="truncate max-w-full overflow-x-auto">{renderValue(value)}</span>
+            <div key={`${receipt.id}-${key}`} className="flex flex-col mb-2 p-2 bg-gray-50 rounded-lg shadow-sm">
+              <span className="font-semibold text-gray-700">{getLabel(key as keyof Receipt)}:</span>
+              <span className="text-sm text-gray-600 mt-1 text-right">{value ? renderValue(value) : '値がありません'}</span>
             </div>
           ))}
       </div>
@@ -216,7 +216,7 @@ const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent
       });
 
       if (!response.ok) {
-        throw new Error('サーバーでエラーが発生しました');
+        throw new Error('サーバーでエラーが発しした');
       }
 
       const blob = await response.blob();
@@ -228,7 +228,7 @@ const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent
       a.click();
       a.remove();
 
-      console.log('証明書が正常に取得されました');
+      console.log('証明書が正常���取得されました');
     } catch (error) {
       console.error('証明書の取得中にエラーが発生ました:', error);
     }
@@ -248,7 +248,7 @@ const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent
         <ActionButton icon={Trash2} onClick={() => deleteReceipt(receipt.id)} tooltip="削除" />
         <ActionButton icon={Download} onClick={() => addCertificateOnServer(receipt)} tooltip="証明書を取得" />
       </div>
-      <h3 className="text-lg font-semibold mb-4">{receipt.issuer || '店舗名なし'}</h3>
+      <h3 className="text-lg font-semibold mb-4">{receipt.issuer || '店舗名な'}</h3>
       <div className="flex justify-between">
         <span className="font-medium">金額:</span>
         <span>{renderValue(receipt.amount)}</span>

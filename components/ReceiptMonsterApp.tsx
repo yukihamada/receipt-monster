@@ -183,6 +183,7 @@ const ReceiptMonsterApp: React.FC<{ renderValue: (key: keyof Receipt) => string 
                     width={400}
                     height={300}
                     className="mx-auto"
+                    style={{ width: 'auto', height: 'auto' }}
                   />
                 </div>
                 <div className="mb-8 text-center">

@@ -9,11 +9,21 @@ export const getLabel = (key: keyof Receipt): string => {
     imageUrl: '画像URL',
     imageOrientation: '画像の向き',
     noryoshusho: '領収書番号',
-    category: 'カテゴリー', // 追加のフィールド
-    description: '説明', // 追加のフィールド
-    // ここに他のフィールドを追加
+    category: 'カテゴリー',
+    registrationNumber: '登録番号', // 追加のフィールド
+    userId: 'ユーザーID',
+    taxCategory: '税区分',
+    issuerContact: '発行者連絡先',
+    hash: 'ハッシュ',
+    issuerAddress: '発行者住所',
+    transactionDate: '取引日',
+    serialNumber: 'シリアル番号',
+    purpose: '目的',
+    recipient: '受取人',
+    uploadTime: 'アップロード時間',
+    reducedTaxRate: '軽減税率',
   };
-  return labels[key] || '不明';
+  return labels[key] || key as string;
 };
 
 export const addTimestamp = (receipt: Receipt): void => {
