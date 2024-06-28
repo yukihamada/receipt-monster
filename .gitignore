@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.cargo
+solana_timestamp_program/target
+Cargo.lock
