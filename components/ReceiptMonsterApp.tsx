@@ -12,6 +12,7 @@ import { uploadMessages } from '../utils/constants';
 import { formatCurrency } from '../utils/formatters';
 import { getLabel, addTimestamp } from '../utils/helpers';
 import { Receipt } from './types';
+import Link from 'next/link';
 
 const ReceiptMonsterApp: React.FC<{ renderValue: (key: keyof Receipt) => string }> = ({ renderValue }) => {
   const [isClient, setIsClient] = useState(false);
@@ -111,12 +112,13 @@ const ReceiptMonsterApp: React.FC<{ renderValue: (key: keyof Receipt) => string 
               <>
                 <div className="text-center">
                   <p className="mb-8 text-lg">無料で会員登録して始めましょう。</p>
-                  <a
-                    href="/signup"
-                    className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center transition duration-300"
-                  >
-                    会員登録ページへ
-                  </a>
+                  <Link href="/signup">
+                    <a
+                      className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center transition duration-300"
+                    >
+                      会員登録ページへ
+                    </a>
+                  </Link>
                 </div>
                 <div className="mb-8 text-center">
                   <h2 className="text-2xl font-bold mb-2">レシートモンスターの特徴</h2>
@@ -125,7 +127,6 @@ const ReceiptMonsterApp: React.FC<{ renderValue: (key: keyof Receipt) => string 
                     <li>タイムスタンプ: アップロード時にハッシュ化し、ブロックチェーンやタイムスタンプサービスを使用して証明。</li>
                     <li>オリジナルモンスター育成: アップロードしたレシートによって、あなただけのオリジナルモンスターが成長。</li>
                     <li>分散型証明: 書類の証明にはブロックチェーン技術を使用しており、改ざん防止が保証されます。</li>
-                    <li>OpenAI API: レシートの内容を解析するためにOpenAIのAPIを使用します。</li>
                   </ul>
                 </div>
                 <div className="mb-8 text-center">
