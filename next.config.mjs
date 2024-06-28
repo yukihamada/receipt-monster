@@ -6,7 +6,12 @@ const nextConfig = {
     swcMinify: true,
   },
   images: {
-    domains: ['imagedelivery.net'], // ここにホスト名を追加
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'doceater.io',
+      },
+    ],
   },
   webpack: (config) => {
     config.resolve.fallback = {
