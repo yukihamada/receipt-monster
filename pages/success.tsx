@@ -1,11 +1,11 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import { Footer, Header } from '../components/CommonComponents';
 
 const Success: React.FC = () => {
   return (
-    <Fragment>
+    <React.Fragment>
       <Head>
         <title>レシートモンスター - 決済成功</title>
       </Head>
@@ -25,7 +25,7 @@ const Success: React.FC = () => {
           </div>
         </main>
       </div>
-    </Fragment>
+    </React.Fragment>
   );
 };
 

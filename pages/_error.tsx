@@ -1,7 +1,8 @@
-import React, { ComponentType } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AppProps } from 'next/app';
+import { NextPageContext } from 'next';
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -29,5 +30,11 @@ function MyApp({ Component, pageProps }: AppProps) {
     </ErrorBoundary>
   );
 }
+
+// 追加部分
+MyApp.getInitialProps = async ({ res, err }: NextPageContext) => {
+  const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
+  return { statusCode };
+};
 
 export default MyApp;
