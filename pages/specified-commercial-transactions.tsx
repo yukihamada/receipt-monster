@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import Head from 'next/head';
-import { Footer, Header } from './CommonComponents';
+import { Footer, Header } from '../components/CommonComponents';
 import Link from 'next/link';
 
 const SpecifiedCommercialTransactions: FC = () => {
@@ -69,7 +69,7 @@ const SpecifiedCommercialTransactions: FC = () => {
         </div>
       </main>
       <footer className="py-6 bg-gray-200 text-center">
-        <Link href="/price">
+        <Link href="/price" legacyBehavior>
           <a className="inline-block px-6 py-3 text-white bg-gradient-to-r from-blue-500 to-green-500 rounded-full shadow-lg hover:from-blue-600 hover:to-green-600 transition-colors duration-300">
             料金ページに戻る
           </a>

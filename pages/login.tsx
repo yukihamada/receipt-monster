@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import { Footer, Header } from './CommonComponents';
+import { Footer, Header } from '../components/CommonComponents';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/router';
 import { auth } from '../firebase';

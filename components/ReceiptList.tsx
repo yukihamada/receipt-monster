@@ -2,23 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Trash2, Edit2, PlusCircle, Clock } from 'lucide-react';
 import Image from 'next/image';
-import { Receipt, labels } from './CommonComponents';
+import { labels } from './CommonComponents'; // 'Receipt' を削除
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase'; // Firestoreのインスタンスをインポート
+import { Receipt } from './types'; // 'Receipt' をここからインポート
 
 interface ReceiptListProps {
   savedReceipts: Receipt[];
   deleteReceipt: (id: string) => void;
-  editReceipt: (receipt: Receipt) => void;
+  editReceipt: (receipt: Receipt) => Promise<void>; // Type updated
   getLabel: (key: keyof Receipt) => string;
   renderValue: (value: any) => string;
   addTimestamp: (receipt: Receipt) => void;
   onAddReceiptClick: () => void;
   isLoading: boolean;
   uploadProgress: { [key: string]: number };
-  currentLoadingMessage: string;
-  currentMessage: string;
+  currentLoadingMessage?: string; // オプショナルに変更
+  currentMessage: string; // Added this line
   renderLoader: () => React.ReactNode;
+  printReceipt: (receipt: Receipt) => void;
 }
 
 const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt, editReceipt, getLabel, renderValue, addTimestamp, onAddReceiptClick, isLoading, uploadProgress, currentLoadingMessage, currentMessage, renderLoader }) => {
@@ -36,7 +38,7 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
       '買い物しなも幸せ？それとゃった？',
       'レシートゼロ。エコな生活らしいです',
       'レシートがないのは、宝くじに当たったからですか？',
-      '無レシート生活、始めました？',
+      '無レ���ート生活、始めました？',
       '空っぽのレシート箱。想像力豊かな買い物の時間です！',
       'レシートなし、思い出いっぱい？',
       '今日のテーマは「無駄遣いゼロ」。素晴らしい成果です！',
@@ -158,7 +160,7 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
 const UpgradeBanner = ({ receiptCount }: { receiptCount: number }) => (
   <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-r-lg shadow" role="alert">
     <p className="font-bold">有料プランへのアップグレードをご検討ください</p>
-    <p>現在{receiptCount}件のレシートが保存されています。有料プランにアップグレードすると、最大1000件まで保存できます。</p>
+    <p>現在{receiptCount}件レシートが保存されています。有料プランにアップグレードすると、最大1000件まで保存できます。</p>
   </div>
 );
 
@@ -192,7 +194,7 @@ const AddReceiptButton = ({ onClick }: { onClick: () => void }) => (
 
 const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent, renderValue, getLabel, addTimestamp }: {
   receipt: Receipt;
-  editReceipt: (receipt: Receipt) => void;
+  editReceipt: (receipt: Receipt) => Promise<void>;
   deleteReceipt: (id: string) => void;
   renderReceiptContent: (receipt: Receipt) => React.ReactNode;
   renderValue: (value: any) => string;
@@ -228,7 +230,7 @@ const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent
 
       console.log('証明書が正常に取得されました');
     } catch (error) {
-      console.error('証明書の取得中にエラーが発生しました:', error);
+      console.error('証明書の取得中にエラーが発生ました:', error);
     }
   };
 
@@ -283,3 +285,4 @@ const ActionButton = ({ icon: Icon, onClick, tooltip }: { icon: React.ElementTyp
 );
 
 export default ReceiptList;
+

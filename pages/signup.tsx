@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head'; // Added: Head component imported
-import { Footer, Header } from './CommonComponents';
+import { Footer, Header } from '../components/CommonComponents';
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { useRouter } from 'next/router';
 import { FaGoogle } from 'react-icons/fa';

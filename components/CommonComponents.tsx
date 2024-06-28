@@ -42,7 +42,7 @@ export const Header: React.FC = () => {
               <li>
                 <Link href="/services" legacyBehavior>
                   <a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm">
-                    サービス紹介
+                    サース紹介
                   </a>
                 </Link>
               </li>
@@ -111,7 +111,7 @@ export const labels: Record<keyof Receipt, string> = {
   issuer: "発行者",
   issuerAddress: "発行者の住所・連絡先",
   issuerContact: "発行者の連絡先",
-  registrationNumber: "発���者の登番号",
+  registrationNumber: "発者の登番号",
   taxCategory: "税区分",
   reducedTaxRate: "軽減税率の適用",
   serialNumber: "通し番号",
@@ -121,13 +121,13 @@ export const labels: Record<keyof Receipt, string> = {
 };
 
 export const uploadMessages: string[] = [
-  "レシートモンスターへようそ！",
+  "���シートモンスターようそ！",
   "このシステムはレシートを簡に理できま。",
   "アップロード中です。少々お待ちください。",
   "レシートのデータを自動で読み取ります。",
   "アップロードが完了すると、結果が表示されます。",
   "日本の税務申告にも対応しています。",
-  "ダウンロードも簡単にできます。",
+  "ダウンロドも簡単にできます。",
   "いろんなファイル形式に対応する予定です。",
   "オープンソースなので日々アップデートされます。",
   "データは安全に管理され、プライバシーも保護されます。"
@@ -143,13 +143,13 @@ export const MotionDiv = styled(motion.div).attrs<MotionProps & React.HTMLAttrib
 
 export const StyledMotionDiv = styled(motion.div)`
   position: relative;
-  // 必要スタイルをここに記述
+  // 要スタイルをここに記述
 `;
 
 export const messages = [
   "レシートを食べて成長するモンスター、あなたの財布はスッキリ！",
   "家計簿がゲームに？レシートモンスターで楽しく節約！",
-  "タイムスタンプ付きで安心、あなたの経費精算をサポート！",
+  "タ��ムスタンプ付で安心、あなたの経費精算をサポート！",
   "レシトの山、さようなら。デジタル管理で空間スッキリ！",
   "モンスターと一緒に、楽しく家計管理。成長が見える喜び！",
   "領収書の整理、もう悩まない。レシートモンスターにお任せ！",
@@ -161,10 +161,10 @@ export const messages = [
   "族で楽しむ家計管理、みんなでモンスター育成！",
   "シーの、AI が解読。家計の見える化をサポート！",
   "財布の中身スッキリ、データはしっかり保管。一石二鳥の便利ツール！",
-  "��日の買い物が冒険に？レシートモンスターで新しい体験を！",
+  "日の買い物が冒険に？レシートモンスターで新い体験を！",
   "領収書の山に埋もれない、スマトな経理担当者になろう！",
   "レシートを撮るたび、モンスターが進化。成長が楽しみにな家計管理！",
-  "書類とはおさらば、デジタルで安全に保管。未来型の文書管理！",
+  "書類とはおらば、デジタルで安全に保管。未来型の文書管理！",
   "家計のムダを発見！AI 分析でスマートな家計を実現！",
   "レシートがモンスターのエサに？楽しみながら、賢く節約！"
 ];

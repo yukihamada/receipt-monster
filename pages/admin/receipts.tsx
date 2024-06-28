@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { app } from '../../firebase'; // Firebaseの初期化をインポート
-import { Receipt } from '../CommonComponents';
+import { Receipt } from '../../components/CommonComponents';
 
 const db = getFirestore(app);
 

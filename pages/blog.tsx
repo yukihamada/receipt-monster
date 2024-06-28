@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { FaUser, FaCalendarAlt, FaArrowRight } from 'react-icons/fa';
 import Head from 'next/head';
-import { Footer } from './CommonComponents';
+import { Footer } from '../components/CommonComponents';
 
 const Blog: React.FC = () => {
   return (

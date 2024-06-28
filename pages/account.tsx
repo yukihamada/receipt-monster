@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { auth } from '../firebase';
 import { onAuthStateChanged, signOut, updatePassword } from 'firebase/auth';
-import { Header, Footer } from './CommonComponents';
+import { Header, Footer } from '../components/CommonComponents';
 import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');

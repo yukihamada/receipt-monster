@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import { Footer, Header } from './CommonComponents';
+import { Footer, Header } from '../components/CommonComponents';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { User } from 'firebase/auth';
@@ -81,9 +81,6 @@ const Pricing: FC = () => {
                     >
                       {currentPlan === 'free' ? '現在加入中' : (session ? 'このプランに変更' : 'サインアップ')}
                     </button>
-                    <Link href="/specified-commercial-transactions" legacyBehavior>
-                      <a className="text-blue-500 hover:underline mt-4 block">特定商取引法に基づく表記</a>
-                    </Link>
                   </div>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between border border-gray-200">
@@ -100,10 +97,13 @@ const Pricing: FC = () => {
                     </ul>
                   </div>
                   <div className="text-center mt-4">
+                    <Link href="/specified-commercial-transactions" legacyBehavior>
+                      <a className="text-blue-400 text-sm hover:underline mt-4 block">特定商取引法に基づく表記</a>
+                    </Link>
                     <p className="text-gray-700 text-2xl font-bold">月額 ¥1,280</p>
                     <button
                       onClick={() => handlePlanChange('standard')}
-                      className={`inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 mt-4 ${currentPlan === 'standard' ? 'cursor-not-allowed' : ''}`}
+                      className={`inline-block bg-gradient-to-r from-orange-400 to-orange-600 text-white py-2 px-4 rounded hover:from-orange-500 hover:to-orange-700 transition duration-300 mt-4 ${currentPlan === 'standard' ? 'cursor-not-allowed' : ''}`}
                       disabled={currentPlan === 'standard'}
                     >
                       {currentPlan === 'standard' ? '現在加入中' : (session ? 'このプランに変更' : 'サインアップ')}

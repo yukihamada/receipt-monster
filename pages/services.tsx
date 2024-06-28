@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
-import { Footer, Header } from './CommonComponents';
+import { Footer, Header } from '../components/CommonComponents';
 
 const Introduction: React.FC = () => (
   <div className="min-h-screen flex flex-col transition-colors duration-300 bg-gray-50 text-gray-900">

@@ -2,7 +2,7 @@ import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import './globals.css';
 import AdminLayout from './admin/AdminLayout';
-import Header, { Footer } from './CommonComponents';
+import Header, { Footer } from '../components/CommonComponents';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();

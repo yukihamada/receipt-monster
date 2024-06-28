@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Header, Footer } from './CommonComponents';
+import { Header, Footer } from '../components/CommonComponents';
 
 export default function Custom404() {
   return (

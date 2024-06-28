@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Footer } from '../CommonComponents';
+import { Footer } from '../../components/CommonComponents';
 
 interface BlogLayoutProps {
   title: string;

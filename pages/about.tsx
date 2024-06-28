@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Footer, Header } from './CommonComponents';
+import { Footer, Header } from '../components/CommonComponents';
 
 const About: React.FC = () => (
   <div className="min-h-screen flex flex-col transition-colors duration-300 bg-gray-100 text-gray-900">
