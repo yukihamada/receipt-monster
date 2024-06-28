@@ -108,11 +108,14 @@ const ReceiptMonsterApp: React.FC<{ renderValue: (key: keyof Receipt) => string 
                 />
               </motion.div>
             </div>
+
+            <div className="mb-8"></div>
+
             {!isLoggedIn ? (
               <>
                 <div className="text-center">
-                  <p className="mb-8 text-lg">無料で会員登録して始めましょう。</p>
-                  <Link href="/signup">
+                  <p className="mb-8 text-lg">料で会員登録して始めましょう。</p>
+                  <Link href="/signup" legacyBehavior>
                     <a
                       className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center transition duration-300"
                     >
@@ -122,20 +125,38 @@ const ReceiptMonsterApp: React.FC<{ renderValue: (key: keyof Receipt) => string 
                 </div>
                 <div className="mb-8 text-center">
                   <h2 className="text-2xl font-bold mb-2">レシートモンスターの特徴</h2>
-                  <ul className="list-disc list-inside text-left mx-auto max-w-2xl text-lg">
+                  <ul className="list-disc list-inside text-left mx-auto max-w-2xl text-lg leading-loose">
                     <li>簡単な書類管理: レシートや領収書をスマホで撮影し、アップロードするだけでデジタル保存が可能。</li>
                     <li>タイムスタンプ: アップロード時にハッシュ化し、ブロックチェーンやタイムスタンプサービスを使用して証明。</li>
                     <li>オリジナルモンスター育成: アップロードしたレシートによって、あなただけのオリジナルモンスターが成長。</li>
-                    <li>分散型証明: 書類の証明にはブロックチェーン技術を使用しており、改ざん防止が保証されます。</li>
+                    <li>分散型証明: 書類の証明にはブロックチェーン技術を使しおり、改ざん防止が保証されます。</li>
                   </ul>
                 </div>
                 <div className="mb-8 text-center">
+                  <Image 
+                    src="/digitalcertificate.webp"
+                    alt="Digital Certificate"
+                    width={400}
+                    height={300}
+                    className="mx-auto"
+                  />
+                </div>
+                <div className="mb-8 text-center">
                   <h2 className="text-2xl font-bold mb-2">使い方の例</h2>
-                  <ul className="list-disc list-inside text-left mx-auto max-w-2xl text-lg">
+                  <ul className="list-disc list-inside text-left mx-auto max-w-2xl text-lg leading-loose">
                     <li>家計簿の管理: 毎日の買い物のレシートを撮影してデジタル保存。家計簿をつけるのが簡単になり、いつでも支出を確認できます。</li>
                     <li>経費精算: ビジネスでの経費精算時に、デジタル化したレシートを証明書類として提出。経費精算のプロセスがスムーズに。</li>
-                    <li>法的証明: 重要な書類や契約書をデジタル化し、タイムスタンプを付与。法的な紛争時にも安心です。</li>
+                    <li>法的証明: 領収書やレシートをデジタル化し、タイムスタンプを付与。電子帳簿保存法にも対応しているのでスキャンした紙はデジタルデータが残るので処分可能です。</li>
                   </ul>
+                </div>
+                <div className="text-center">
+                  <Link href="/signup" legacyBehavior>
+                    <a
+                      className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center transition duration-300"
+                    >
+                      会員登録ページへ
+                    </a>
+                  </Link>
                 </div>
               </>
             ) : (
