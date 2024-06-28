@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
 import ReceiptList from './ReceiptList';
 import { useReceipts } from '../hooks/useReceipts';
@@ -13,6 +13,50 @@ import { formatCurrency } from '../utils/formatters';
 import { getLabel, addTimestamp } from '../utils/helpers';
 import { Receipt } from './types';
 import Link from 'next/link';
+
+const FeatureCard: React.FC<{ title: string; description: string; icon: string }> = ({ title, description, icon }) => (
+  <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="flex items-center mb-4">
+      <Image src={icon} alt={title} width={40} height={40} />
+      <h3 className="text-xl font-semibold ml-4">{title}</h3>
+    </div>
+    <p className="text-gray-600">{description}</p>
+  </div>
+);
+
+const PricingCard: React.FC<{ 
+  title: string; 
+  price: string; 
+  features: string[]; 
+  isPopular?: boolean;
+  onSignUp: () => void;
+}> = ({ title, price, features, isPopular, onSignUp }) => (
+  <div className={`bg-white p-6 rounded-lg shadow-md ${isPopular ? 'border-2 border-blue-500' : ''}`}>
+    {isPopular && <div className="bg-blue-500 text-white text-center py-1 px-4 rounded-t-lg -mt-6 -mx-6 mb-4">人気プラン</div>}
+    <h3 className="text-2xl font-bold mb-4">{title}</h3>
+    <p className="text-4xl font-bold mb-6">{price}<span className="text-sm font-normal">/月</span></p>
+    <ul className="mb-6">
+      {features.map((feature, index) => (
+        <li key={index} className="flex items-center mb-2">
+          <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+          </svg>
+          {feature}
+        </li>
+      ))}
+    </ul>
+    <button 
+      onClick={onSignUp}
+      className={`w-full py-2 px-4 rounded-full font-bold ${
+        isPopular 
+          ? 'bg-blue-500 text-white hover:bg-blue-600' 
+          : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+      }`}
+    >
+      サインアップ
+    </button>
+  </div>
+);
 
 const ReceiptMonsterApp: React.FC<{ renderValue: (key: keyof Receipt) => string }> = ({ renderValue }) => {
   const [isClient, setIsClient] = useState(false);

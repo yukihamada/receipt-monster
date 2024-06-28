@@ -28,7 +28,11 @@ export const Header: React.FC = () => {
   return (
     <header className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-white p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-3xl font-extrabold">レシモン</h1>
+        <Link href="/" legacyBehavior>
+          <a className="text-3xl font-extrabold">
+            レシモン
+          </a>
+        </Link>
         <nav>
           <ul className="flex space-x-4">
             <li>
@@ -130,7 +134,7 @@ export const uploadMessages: string[] = [
   "ダウンロドも簡単にできます。",
   "いろんなファイル形式に対応する予定です。",
   "オープンソースなので日々アップデートされます。",
-  "データは安全に管理され、プライバシーも保護されます。"
+  "データは安全に管理され、プライバシーも保護され��す。"
 ];
 
 export const MotionDiv = styled(motion.div).attrs<MotionProps & React.HTMLAttributes<HTMLDivElement>>(() => ({
