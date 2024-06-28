@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Trash2, Edit2, PlusCircle, Clock } from 'lucide-react';
 import Image from 'next/image';
-import { labels } from './CommonComponents'; // 'Receipt' を削除
+import { getLabel } from '../utils/helpers'; // Import getLabel from utils/helpers
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase'; // Firestoreのインスタンスをインポート
 import { Receipt } from './types'; // 'Receipt' をここからインポート
@@ -17,7 +17,7 @@ interface ReceiptListProps {
   onAddReceiptClick: () => void;
   isLoading: boolean;
   uploadProgress: { [key: string]: number };
-  currentLoadingMessage?: string; // オプショナルに変更
+  currentLoadingMessage: string; // Added this line
   currentMessage: string; // Added this line
   renderLoader: () => React.ReactNode;
   printReceipt: (receipt: Receipt) => void;
@@ -38,7 +38,7 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
       '買い物しなも幸せ？それとゃった？',
       'レシートゼロ。エコな生活らしいです',
       'レシートがないのは、宝くじに当たったからですか？',
-      '無レ���ート生活、始めました？',
+      '無レシート生活、始めました？',
       '空っぽのレシート箱。想像力豊かな買い物の時間です！',
       'レシートなし、思い出いっぱい？',
       '今日のテーマは「無駄遣いゼロ」。素晴らしい成果です！',
@@ -159,7 +159,7 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
 
 const UpgradeBanner = ({ receiptCount }: { receiptCount: number }) => (
   <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-r-lg shadow" role="alert">
-    <p className="font-bold">有料プランへのアップグレードをご検討ください</p>
+    <p className="font-bold">有料プランへのアップグレードご検討ください</p>
     <p>現在{receiptCount}件レシートが保存されています。有料プランにアップグレードすると、最大1000件まで保存できます。</p>
   </div>
 );
@@ -285,4 +285,3 @@ const ActionButton = ({ icon: Icon, onClick, tooltip }: { icon: React.ElementTyp
 );
 
 export default ReceiptList;
-

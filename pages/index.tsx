@@ -6,7 +6,15 @@ const ReceiptMonsterApp = dynamic(() => import('../components/ReceiptMonsterApp'
 
 const Home: React.FC = () => {
   const renderValue = (value: any) => {
-    // ここに値をレンダリングするロジックを追加します
+    // 値が null または undefined の場合は空文字列を返す
+    if (value == null) {
+      return '';
+    }
+    // 値がオブジェクトの場合は JSON 文字列に変換して返す
+    if (typeof value === 'object') {
+      return JSON.stringify(value);
+    }
+    // その他の場合は文字列に変換して返す
     return value.toString();
   };
 

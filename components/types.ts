@@ -6,6 +6,8 @@ export interface Receipt {
     imageUrl?: string;
     imageOrientation?: number;
     noryoshusho?: string;
+    category?: string; // Added field
+    description?: string; // Added field
     [key: string]: any; // その他のプロパティを許可
 }
 

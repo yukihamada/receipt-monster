@@ -42,7 +42,7 @@ export const Header: React.FC = () => {
               <li>
                 <Link href="/services" legacyBehavior>
                   <a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm">
-                    サース紹介
+                    サービス紹介
                   </a>
                 </Link>
               </li>
@@ -70,7 +70,7 @@ export const Header: React.FC = () => {
 export const Footer: React.FC = () => (
   <footer className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-white p-4 text-center shadow-lg">
     <nav className="overflow-x-auto">
-      <ul className="flex justify-center space-x-4">
+      <ul className="flex justify-center space-x-4 min-w-max">
         <li><Link href="/" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaHome className="mr-1" />ホーム</a></Link></li>
         <li><Link href="/services" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaServicestack className="mr-1" />サービス紹介</a></Link></li>
         <li><Link href="/contact" legacyBehavior><a className="flex items-center hover:text-yellow-300 transition duration-300 whitespace-nowrap text-sm"><FaEnvelope className="mr-1" />お問い合わせ</a></Link></li>
@@ -121,7 +121,7 @@ export const labels: Record<keyof Receipt, string> = {
 };
 
 export const uploadMessages: string[] = [
-  "���シートモンスターようそ！",
+  "シートモンスターようそ！",
   "このシステムはレシートを簡に理できま。",
   "アップロード中です。少々お待ちください。",
   "レシートのデータを自動で読み取ります。",
@@ -149,7 +149,7 @@ export const StyledMotionDiv = styled(motion.div)`
 export const messages = [
   "レシートを食べて成長するモンスター、あなたの財布はスッキリ！",
   "家計簿がゲームに？レシートモンスターで楽しく節約！",
-  "タ��ムスタンプ付で安心、あなたの経費精算をサポート！",
+  "タムスタンプ付で安心、あなたの経費精算をサポート！",
   "レシトの山、さようなら。デジタル管理で空間スッキリ！",
   "モンスターと一緒に、楽しく家計管理。成長が見える喜び！",
   "領収書の整理、もう悩まない。レシートモンスターにお任せ！",
@@ -157,7 +157,7 @@ export const messages = [
   "エコな暮らしへの第一歩、紙のレシートにさようなら！",
   "ビジネスマンの強い味方、経費精算をスマートに！",
   "レシートを撮って、モンスター育成。家計管理が楽しくなる！",
-  "大切な書類をしっかり保管、ブロックチェーンで安心管理！",
+  "大切な書類をしっかり保、ブロックチェーンで安心管理！",
   "族で楽しむ家計管理、みんなでモンスター育成！",
   "シーの、AI が解読。家計の見える化をサポート！",
   "財布の中身スッキリ、データはしっかり保管。一石二鳥の便利ツール！",
@@ -218,3 +218,4 @@ const CommonComponents: React.FC = () => {
 };
 
 export default CommonComponents;
+
