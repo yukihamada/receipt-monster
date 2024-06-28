@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { app } from '../../firebase';
 import { User } from 'firebase/auth';
+import Image from 'next/image';
 
 const AdminDashboard: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -21,10 +22,11 @@ const AdminDashboard: React.FC = () => {
         <div className="md:flex">
           <div className="md:flex-shrink-0">
             {user?.photoURL ? (
-              <img 
-                className="h-48 w-full object-cover md:w-48" 
-                src={user.photoURL} 
+              <Image
+                src={user.photoURL}
                 alt={user.displayName || 'ユーザー画像'}
+                width={192}
+                height={192}
                 onError={(e) => {
                   e.currentTarget.onerror = null;
                   e.currentTarget.src = '/path/to/default-image.jpg';
