@@ -14,7 +14,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'imagedelivery.net',
-     },
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
     ],
   },
   webpack: (config) => {

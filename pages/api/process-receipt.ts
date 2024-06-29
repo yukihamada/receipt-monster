@@ -42,16 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         let processedImage: Buffer;
 
-        if (type?.mime === 'image/heic') {
-          try {
-            processedImage = await convertHeicToJpeg(buffer);
-          } catch (error) {
-            console.error('HEIC変換失敗:', error);
-            return res.status(500).json({ error: 'HEIC画像の変換に失敗しました: ' + (error as Error).message });
-          }
-        } else {
-          processedImage = buffer;
-        }
+        processedImage = buffer;
 
         // ファイルのハッシュを生成
         const hash = crypto.createHash('sha256').update(processedImage).digest('hex');
@@ -70,11 +61,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         • 発者の登録番号（法人番号など）
         • 税区分（消費税など）
         • 軽減税率の適用（該当する場合）
-        • 通し番号（透明性を高めるために推奨）
-        • 画像の正しい向きについても教えてください。時計回りをプラスとして文字を読むのに紙の回転が必要な角度(0,90,-90,-180)
-        
+        • 通し番号（透明性を高めるために推奨）        
         領収書の写真でない場合には、以下のように返答してください。
-        • [NORYOSHUSHO]: 領収書の写真ではありませんと描いた上で写真の中身を詳に説明してください。
+        • [NORYOSHUSHO]: 領収書の写真ではありませんと描いた上で写真の中身を詳に説明してくださ��。
         `;
 
         const result = await processWithGPT4(imageUrl, prompt);
@@ -88,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.error('Error processing image:', error as Error);
         return res.status(500).json({ error: (error as Error).message });
       } finally {
-        fs.unlinkSync(image.filepath); // 一時ファ��を削除
+        fs.unlinkSync(image.filepath); // 一時ファイルを削除
       }
     });
   } else {
@@ -168,7 +157,6 @@ async function processWithGPT4(imageUrl: string, prompt: string): Promise<any> {
     "taxCategory": "10%", // 税区分（消費税など）
     "reducedTaxRate": "適用なし", // 軽減税率の適用（該当する場合）
     "serialNumber": "0001", // 通し番（透明性を高めるために推奨）
-    "imageOrientation": "-90" // 画像の向き
     "noryoshusho": "" // 領収書の写真でない場合には、noryoshushoに写真の詳細を描いてください
   }: ${response1.choices[0].message.content}`;
 

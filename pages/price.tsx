@@ -97,9 +97,6 @@ const Pricing: FC = () => {
                     </ul>
                   </div>
                   <div className="text-center mt-4">
-                    <Link href="/specified-commercial-transactions" legacyBehavior>
-                      <a className="text-blue-400 text-sm hover:underline mt-4 block">特定商取引法に基づく表記</a>
-                    </Link>
                     <p className="text-gray-700 text-2xl font-bold">月額 ¥1,280</p>
                     <button
                       onClick={() => handlePlanChange('standard')}
@@ -137,6 +134,9 @@ const Pricing: FC = () => {
                   </div>
                 </div>
               </div>
+              <Link href="/specified-commercial-transactions" legacyBehavior>
+                      <a className="text-blue-400 text-center hover:underline mt-4 block">特定商取引法に基づく表記</a>
+              </Link>
             </div>
           </div>
         </div>

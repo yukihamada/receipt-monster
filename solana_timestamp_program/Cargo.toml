@@ -3,14 +3,22 @@ name = "solana_timestamp_program"
 version = "0.1.0"
 edition = "2021"
 
-[features]
-no-entrypoint = []
-
 [dependencies]
-solana-program = "1.16"
+solana-program = "=1.16.25"
 borsh = "0.10"
 borsh-derive = "0.10"
 thiserror = "1.0"
+ahash = "=0.8.4"
+getrandom = { version = "0.2", features = ["custom"] }
+zerocopy = "0.7.34"
+
+[features]
+custom-unstable = []
+nightly = []
 
 [lib]
 crate-type = ["cdylib", "lib"]
+
+[package.metadata.docs.rs]
+features = ["custom-unstable"]
+rustc-args = ["--cfg=nightly"]

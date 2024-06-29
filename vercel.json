@@ -7,12 +7,21 @@
     "pages/api/process-receipt.ts": {
       "maxDuration": 60,
       "memory": 1024
+    },
+    "api/addTimestampProgram.ts": {
+      "runtime": "vercel/node"
     }
   },
   "rewrites": [
     {
       "source": "/pages/api/(.*)",
       "destination": "/api/$1"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/addTimestampProgram",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

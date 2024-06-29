@@ -106,6 +106,38 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
     }
   };
 
+  const addSolanaTransaction = async (receipt: Receipt) => {
+    if (receipt.hash && !receipt.solanaTransaction) {
+      try {
+        const response = await fetch('/api/addTimestampProgram', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ hash: receipt.hash }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Solanaトランザクションの追加中にエラーが発生しました');
+        }
+
+        const data = await response.json();
+        const updatedReceipt = { ...receipt, solanaTransaction: data.transactionId };
+
+        await editReceipt(updatedReceipt);
+        console.log('Solanaトランザクションが正常に追加されました');
+      } catch (error) {
+        console.error('Solanaトランザクションの追加中にエラーが発生しました:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    savedReceipts.forEach(receipt => {
+      addSolanaTransaction(receipt);
+    });
+  }, [savedReceipts]);
+
   return (
     <>
       {isLoading && renderLoader()}
@@ -228,7 +260,7 @@ const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent
       a.click();
       a.remove();
 
-      console.log('証明書が正常���取得されました');
+      console.log('証明書が正常取得されました');
     } catch (error) {
       console.error('証明書の取得中にエラーが発生ました:', error);
     }
