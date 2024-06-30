@@ -16,7 +16,7 @@ const defaultSigner = Keypair.fromSecretKey(secretKey);
 
 const connection = new Connection('https://api.mainnet-beta.solana.com');
 
-export default async (req: VercelRequest, res: VercelResponse) => {
+const addTimestampProgram = async (req: VercelRequest, res: VercelResponse) => {
   try {
     const { receiptId } = req.body;
 
@@ -59,3 +59,5 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     res.status(500).send(`Error: ${error.message}`);
   }
 };
+
+export default addTimestampProgram;

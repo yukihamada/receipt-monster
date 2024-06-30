@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Trash2, Edit2, PlusCircle, Clock } from 'lucide-react';
 import Image from 'next/image';
@@ -106,7 +106,7 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
     }
   };
 
-  const addSolanaTransaction = async (receipt: Receipt) => {
+  const addSolanaTransaction = useCallback(async (receipt: Receipt) => {
     if (receipt.hash && !receipt.solanaTransaction) {
       try {
         const response = await fetch('/api/addTimestampProgram', {
@@ -130,13 +130,13 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt,
         console.error('Solanaトランザクションの追加中にエラーが発生しました:', error);
       }
     }
-  };
+  }, [editReceipt]);
 
   useEffect(() => {
     savedReceipts.forEach(receipt => {
       addSolanaTransaction(receipt);
     });
-  }, [savedReceipts]);
+  }, [savedReceipts, addSolanaTransaction]); // 依存配列にsavedReceiptsとaddSolanaTransactionを追加
 
   return (
     <>
@@ -278,7 +278,7 @@ const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent
       <div className="absolute top-2 right-2 space-x-2 flex items-start">
         <ActionButton icon={Edit2} onClick={() => editReceipt(receipt)} tooltip="編集" />
         <ActionButton icon={Trash2} onClick={() => deleteReceipt(receipt.id)} tooltip="削除" />
-        <ActionButton icon={Download} onClick={() => addCertificateOnServer(receipt)} tooltip="証明書を取得" />
+        <ActionButton icon={Download} onClick={() => addCertificateOnServer(receipt)} tooltip="証��書を取得" />
       </div>
       <h3 className="text-lg font-semibold mb-4">{receipt.issuer || '店舗名な'}</h3>
       <div className="flex justify-between">
