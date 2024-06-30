@@ -8,8 +8,8 @@
       "maxDuration": 60,
       "memory": 1024
     },
-    "page/api/cron/addTimestampProgram.ts": {
-      "runtime": "vercel-node@latest"
+    "pages/api/cron/addTimestampProgram.ts": {
+      "runtime": "vercel-node@18.0.0"
     }
   },
   "rewrites": [
@@ -20,7 +20,7 @@
   ],
   "crons": [
     {
-      "path": "/pages/api/cron/addTimestampProgram",
+      "path": "/page/api/cron/addTimestampProgram",
       "schedule": "*/5 * * * *"
     }
   ]
