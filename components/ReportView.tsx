@@ -5,9 +5,10 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Resp
 
 interface ReportViewProps {
   receipts: Receipt[];
+  onSelectReceipts: (receiptIds: string[]) => void;
 }
 
-const ReportView: React.FC<ReportViewProps> = ({ receipts }) => {
+const ReportView: React.FC<ReportViewProps> = ({ receipts, onSelectReceipts }) => {
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
   const [selectedCurrency, setSelectedCurrency] = useState<string>('all');
 
@@ -122,6 +123,31 @@ const ReportView: React.FC<ReportViewProps> = ({ receipts }) => {
     return Object.entries(byDay).map(([day, amount]) => ({ day, amount }));
   }, [filteredReceipts]);
 
+  const handleDataClick = (data: any) => {
+    let selectedReceipts: Receipt[] = [];
+
+    if (data.name) {
+      // カテゴリがクリックされた場合
+      selectedReceipts = filteredReceipts.filter(r => r.category === data.name);
+    } else if (data.month) {
+      // 月がクリックされた場合
+      selectedReceipts = receipts.filter(r => r.date.startsWith(data.month));
+    } else if (data.currency) {
+      // 通貨がクリックされた場合
+      selectedReceipts = filteredReceipts.filter(r => r.currency === data.currency);
+    } else if (data.day) {
+      // 曜日がクリックされた場合
+      const dayIndex = ['日', '月', '火', '水', '木', '金', '土'].indexOf(data.day);
+      selectedReceipts = filteredReceipts.filter(r => new Date(r.date).getDay() === dayIndex);
+    } else if (data.date) {
+      // 日付がクリックされた場合
+      selectedReceipts = filteredReceipts.filter(r => r.date === data.date);
+    }
+
+    // 選択されたレシートのIDを親コンポーネントに渡す
+    onSelectReceipts(selectedReceipts.filter(r => r.id !== undefined).map(r => r.id as string));
+  };
+
   return (
     <div className="bg-gray-100 p-6 rounded-xl shadow-lg">
       <h2 className="text-3xl font-bold mb-6 text-gray-800">レポート概要</h2>
@@ -218,13 +244,14 @@ const ReportView: React.FC<ReportViewProps> = ({ receipts }) => {
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
+                onClick={(data) => handleDataClick(data)}
               >
                 {pieChartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip formatter={(value) => formatCurrency(value as number, 'JPY')} />
-              <Legend />
+              <Legend onClick={(data) => handleDataClick(data)} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -238,7 +265,7 @@ const ReportView: React.FC<ReportViewProps> = ({ receipts }) => {
             <YAxis />
             <Tooltip formatter={(value) => formatCurrency(value as number, 'JPY')} />
             <Legend />
-            <Bar dataKey="amount" fill="#8884d8" />
+            <Bar dataKey="amount" fill="#8884d8" onClick={(data) => handleDataClick(data)} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -259,6 +286,7 @@ const ReportView: React.FC<ReportViewProps> = ({ receipts }) => {
                 data={currency.data}
                 name={currency.currency}
                 stroke={COLORS[index % COLORS.length]}
+                onClick={(data) => handleDataClick({ ...data, currency: currency.currency })}
               />
             ))}
           </LineChart>
@@ -293,7 +321,7 @@ const ReportView: React.FC<ReportViewProps> = ({ receipts }) => {
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip formatter={(value) => formatCurrency(value as number, currency.currency)} />
-                <Bar dataKey="amount" fill={COLORS[currencyTrends.indexOf(currency) % COLORS.length]} />
+                <Bar dataKey="amount" fill={COLORS[currencyTrends.indexOf(currency) % COLORS.length]} onClick={(data) => handleDataClick(data)} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -308,9 +336,9 @@ const ReportView: React.FC<ReportViewProps> = ({ receipts }) => {
             <YAxis />
             <Tooltip formatter={(value) => formatCurrency(value as number, 'JPY')} />
             <Legend />
-            <Bar dataKey="amount" fill="#8884d8" name="日別支出" />
-            <Line type="monotone" dataKey="amount" stroke="#ff7300" dot={false} name="支出トレンド" />
-            <Area type="monotone" dataKey={() => averageDailySpending} fill="#82ca9d" stroke="#82ca9d" name="平均支出" />
+            <Bar dataKey="amount" fill="#8884d8" name="日別支出" onClick={(data) => handleDataClick(data)} />
+            <Line type="monotone" dataKey="amount" stroke="#ff7300" dot={false} name="支出トレンド" onClick={(data) => handleDataClick(data)} />
+            <Area type="monotone" dataKey={() => averageDailySpending} fill="#82ca9d" stroke="#82ca9d" name="平均支出" onClick={(data) => handleDataClick(data)} />
           </ComposedChart>
         </ResponsiveContainer>
         <p className="mt-2 text-center text-gray-600">平均日別支出: {formatCurrency(averageDailySpending, 'JPY')}</p>
@@ -323,7 +351,7 @@ const ReportView: React.FC<ReportViewProps> = ({ receipts }) => {
             <XAxis dataKey="day" />
             <YAxis />
             <Tooltip formatter={(value) => formatCurrency(value as number, 'JPY')} />
-            <Bar dataKey="amount" fill="#8884d8" />
+            <Bar dataKey="amount" fill="#8884d8" onClick={(data) => handleDataClick(data)} />
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -5,17 +5,20 @@ import { formatCurrency } from '../utils/formatCurrency';
 import { formatRelativeTime } from '../utils/formatRelativeTime';
 import { findSimilarReceipts } from '../utils/findSimilarReceipts'; // This function needs to be created
 
-type ReceiptWithId = Receipt & {
+type ReceiptWithId = Omit<Receipt, 'amount'> & {
   id: string;
+  amount: number | { grossAmount: number };
 };
 
 interface ReceiptListProps {
   receipts: ReceiptWithId[];
   onSelectReceipt: (receipt: ReceiptWithId) => void;
   deleteReceipt: (id: string) => void;
+  selectedReceiptIds: string[];
+  onSelectReceiptIds: (ids: string[]) => void;
 }
 
-const ReceiptList: React.FC<ReceiptListProps> = ({ receipts, onSelectReceipt, deleteReceipt }) => {
+const ReceiptList: React.FC<ReceiptListProps> = ({ receipts, onSelectReceipt, deleteReceipt, selectedReceiptIds, onSelectReceiptIds }) => {
   const [expandedReceipt, setExpandedReceipt] = useState<string | null>(null);
   const [showImage, setShowImage] = useState<string | null>(null);
 
@@ -31,46 +34,73 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ receipts, onSelectReceipt, de
     const grouped = receipts.reduce((acc, receipt) => {
       const date = new Date(receipt.transactionDate);
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(receipt);
+      if (!acc[key]) {
+        acc[key] = { receipts: [], totalAmount: 0 };
+      }
+      acc[key].receipts.push(receipt);
+      
+      // amountが文字列またはオブジェクトの場合に対��
+      let amount = typeof receipt.amount === 'object' && 'grossAmount' in receipt.amount
+        ? (receipt.amount as { grossAmount: number }).grossAmount
+        : Number(receipt.amount);
+
+      // 金額を円に換算
+      const formattedAmount = formatCurrency(amount, receipt.currency);
+      let amountInJPY = amount;
+      
+      if (receipt.currency !== 'JPY') {
+        const match = formattedAmount.match(/約(.*)\)/);
+        if (match && match[1]) {
+          amountInJPY = Number(match[1].replace(/[^0-9.-]+/g, ''));
+        }
+      }
+      
+      acc[key].totalAmount += amountInJPY;
       return acc;
-    }, {} as Record<string, ReceiptWithId[]>);
+    }, {} as Record<string, { receipts: ReceiptWithId[], totalAmount: number }>);
 
     return Object.entries(grouped).sort(([a], [b]) => b.localeCompare(a));
   }, [receipts]);
 
   return (
-    <div className="container mx-auto p-4">
-      {receiptsByMonth.map(([month, monthReceipts]) => (
-        <div key={month} className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">{month}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="container mx-auto p-4 bg-gray-100">
+      {receiptsByMonth.map(([month, { receipts: monthReceipts, totalAmount }]) => (
+        <div key={month} className="mb-12">
+          <h2 className="text-2xl font-bold mb-6 sticky top-0 bg-gradient-to-r from-blue-500 to-purple-600 text-white z-10 py-3 px-4 rounded-lg shadow-lg transform -translate-y-2 flex justify-between items-center">
+            <span>{month}</span>
+            <span className="text-xl">合計: {formatCurrency(totalAmount, 'JPY')}</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {monthReceipts.map((receipt) => {
               if (!receipt.id) return null;
               const receiptWithId: ReceiptWithId = {
                 ...receipt,
                 id: receipt.id,
-                amount: receipt.amount.toString(), // 文字列に変換
+                amount: typeof receipt.amount === 'object' && 'grossAmount' in receipt.amount
+                  ? receipt.amount
+                  : Number(receipt.amount),
               };
               return (
-                <div key={receiptWithId.id} className="bg-white shadow-lg rounded-lg overflow-hidden">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
+                <div key={receiptWithId.id} className="bg-white shadow-md rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+                  <div className="p-5">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center">
-                        <FaReceipt className="text-blue-500 mr-2" />
-                        <h3 className="text-lg font-semibold">{receipt.issuer}</h3>
+                        <FaReceipt className="text-blue-500 mr-2 text-xl" />
+                        <h3 className="text-lg font-semibold text-gray-800">{receipt.issuer}</h3>
                       </div>
                       <button
                         onClick={() => receiptWithId.id && toggleReceiptDetails(receiptWithId.id)}
-                        className="btn btn-sm btn-ghost"
+                        className="btn btn-circle btn-sm btn-ghost"
                       >
                         {expandedReceipt === receiptWithId.id ? <FaChevronUp /> : <FaChevronDown />}
                       </button>
                     </div>
-                    <p className="text-gray-600">{receipt.transactionDate}</p>
-                    <p className="text-xl font-bold mt-2">{formatCurrency(Number(receipt.amount), receipt.currency)}</p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      <FaClock className="inline-block mr-1" />
+                    <p className="text-gray-600 text-sm">{receipt.transactionDate}</p>
+                    <p className="text-2xl font-bold mt-2 text-blue-600">{formatCurrency(typeof receipt.amount === 'object' && 'grossAmount' in receipt.amount
+                      ? (receipt.amount as { grossAmount: number }).grossAmount
+                      : Number(receipt.amount), receipt.currency)}</p>
+                    <p className="text-sm text-gray-500 mt-2 flex items-center">
+                      <FaClock className="mr-1" />
                       {receipt.registrationDate && formatRelativeTime(receipt.registrationDate)}
                     </p>
                   </div>
@@ -79,7 +109,9 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ receipts, onSelectReceipt, de
                       <p>発行者: {receipt.issuer}</p>
                       <p>住所: {receipt.issuerAddress}</p>
                       <p>取引日: {receipt.transactionDate}</p>
-                      <p>額: {receipt.amount}円</p>
+                      <p>額: {typeof receipt.amount === 'object' && 'grossAmount' in receipt.amount
+                        ? (receipt.amount as { grossAmount: number }).grossAmount
+                        : Number(receipt.amount)}円</p>
                       <p>税区分: {receipt.taxCategory}</p>
                       <p>軽減税率: {receipt.reducedTaxRate}</p>
                       <p>目的: {receipt.purpose}</p>
@@ -104,7 +136,6 @@ const ReceiptList: React.FC<ReceiptListProps> = ({ receipts, onSelectReceipt, de
                           ))}
                         </ul>
                       )}
-                      
                     </div>
                   )}
                   <div className="bg-gray-100 px-4 py-2 flex justify-end">

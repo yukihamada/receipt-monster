@@ -48,7 +48,10 @@ const theme = createTheme({
 });
 
 // 新しい型定義を追加
-type ReceiptWithId = Receipt & { id: string };
+type ReceiptWithId = Omit<Receipt, 'amount'> & {
+  id: string;
+  amount: number | { grossAmount: number };
+};
 
 const AuthenticatedHome: React.FC = () => {
   const [isClient, setIsClient] = useState(false);
@@ -74,6 +77,7 @@ const AuthenticatedHome: React.FC = () => {
   });
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [previewImages, setPreviewImages] = useState<{ file: File; preview: string | null; uploaded: boolean }[]>([]);
+  const [selectedReceiptIds, setSelectedReceiptIds] = useState<string[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
@@ -111,9 +115,17 @@ const AuthenticatedHome: React.FC = () => {
     setSelectedReceipt(null);
   }, []);
 
-  const handleSelectReceipt = useCallback((receipt: Receipt) => {
-    setSelectedReceipt(receipt);
-    setIsModalOpen(true);
+  const handleSelectReceipt = useCallback((receipt: ReceiptWithId) => {
+    if (receipt.id) {
+      const formattedReceipt: Receipt = {
+        ...receipt,
+        amount: typeof receipt.amount === 'number' 
+          ? receipt.amount.toString() 
+          : (receipt.amount as { grossAmount: number }).grossAmount.toString()
+      };
+      setSelectedReceipt(formattedReceipt);
+      setIsModalOpen(true);
+    }
   }, []);
 
   const handleSearch = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,7 +134,7 @@ const AuthenticatedHome: React.FC = () => {
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) {
-      console.warn('日付が提供されていません。現在の日付を使用します。');
+      console.warn('日付が提供さていません。現在の日付を使用します。');
       return new Date().toISOString().split('T')[0];  // 現在の日付をYYYY-MM-DD形式で返す
     }
 
@@ -328,7 +340,7 @@ const AuthenticatedHome: React.FC = () => {
       handleCloseModal();
     } catch (error) {
       console.error('レシート追加エラー:', error);
-      alert('レシートの追加に失敗しました');
+      alert('レシの追加に失敗しました');
     }
   }, [newReceipt, user, handleCloseModal]);
 
@@ -357,6 +369,20 @@ const AuthenticatedHome: React.FC = () => {
   if (!isClient) {
     return null; // または適切なローディング表示
   }
+
+  // フィルタリングとマッピングのロジックを分離
+  const filteredReceipts = receipts
+    .filter((receipt: Receipt) =>
+      receipt.id !== undefined &&
+      (receipt.issuer?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      receipt.amount?.toString().includes(searchQuery) ||
+      receipt.transactionDate?.includes(searchQuery))
+    )
+    .map((receipt): ReceiptWithId => ({
+      ...receipt,
+      id: receipt.id as string,
+      amount: typeof receipt.amount === 'string' ? parseFloat(receipt.amount) : receipt.amount
+    }));
 
   return (
     <ThemeProvider theme={theme}>
@@ -456,7 +482,7 @@ const AuthenticatedHome: React.FC = () => {
           >
             <input {...getInputProps()} />
             <FaFileInvoice className="mx-auto text-5xl text-gray-400 mb-4" />
-            <p className="text-lg mb-4">こ���にファルをドロップするか、クリックしてアップロード</p>
+            <p className="text-lg mb-4">ここにファルをドロップするか、クリックしてアップロード</p>
             <button
               onClick={handleButtonClick}
               className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition duration-300 ease-in-out"
@@ -507,17 +533,27 @@ const AuthenticatedHome: React.FC = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
         >
           {showReport ? (
-            <ReportView receipts={receipts} />
+            <ReportView
+              receipts={receipts}
+              onSelectReceipts={(receiptIds: string[]) => {
+                const receipt = receipts.find(r => r.id === receiptIds[0]);
+                if (receipt && receipt.id) {
+                  const receiptWithId: ReceiptWithId = {
+                    ...receipt,
+                    id: receipt.id,
+                    amount: typeof receipt.amount === 'string' ? { grossAmount: parseFloat(receipt.amount) } : receipt.amount
+                  };
+                  handleSelectReceipt(receiptWithId);
+                }
+              }}
+            />
           ) : (
             <ReceiptList
-              receipts={receipts.filter((receipt: Receipt): receipt is ReceiptWithId =>
-                receipt.id !== undefined &&
-                (receipt.issuer?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                receipt.amount?.toString().includes(searchQuery) ||
-                receipt.transactionDate?.includes(searchQuery))
-              )}
+              receipts={filteredReceipts}
               onSelectReceipt={handleSelectReceipt}
               deleteReceipt={handleDeleteReceipt}
+              selectedReceiptIds={selectedReceiptIds}
+              onSelectReceiptIds={setSelectedReceiptIds}
             />
           )}
         </motion.div>
@@ -527,13 +563,7 @@ const AuthenticatedHome: React.FC = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.5 }}
         >
-          <StyledButton
-            variant="outlined"
-            color="success"
-            onClick={() => setShowReport(!showReport)}
-          >
-            レポート表示
-          </StyledButton>
+
         </motion.div>
 
         <AnimatePresence>
@@ -683,14 +713,6 @@ const AuthenticatedHome: React.FC = () => {
           </DialogContent>
         </Dialog>
 
-        <div>
-          <button onClick={() => handleSort('registrationDate')}>
-            登録日で並び替え {sortField === 'registrationDate' && (sortOrder === 'asc' ? '↑' : '↓')}
-          </button>
-          <button onClick={() => handleSort('transactionDate')}>
-            取引日で並び替え {sortField === 'transactionDate' && (sortOrder === 'asc' ? '↑' : '↓')}
-          </button>
-        </div>
       </motion.div>
     </ThemeProvider>
   );
@@ -699,7 +721,7 @@ const AuthenticatedHome: React.FC = () => {
 // カテゴリを推測する関数（実装が必）
 function getCategory(purpose: string): string {
   // 目的に基づいてカテゴリを推測するロジクを実装
-  return '未分類'; // デフォルト値
+  return '��分類'; // デフォルト値
 }
 
 export default AuthenticatedHome;
