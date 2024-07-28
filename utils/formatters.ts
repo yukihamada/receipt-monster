@@ -28,11 +28,28 @@ export const formatTimestamp = (timestamp: string): string => {
    * @param amount フォーマットする数値
    * @returns フォーマットされた通貨文字列
    */
-  export const formatCurrency = (amount: number): string => {
+  export const formatCurrency = (value: number | string): string => {
+    let numericValue: number;
+
+    if (typeof value === 'string') {
+      // 文字列から数字のみを抽出
+      const numericString = value.replace(/[^\d.]/g, '');
+      numericValue = parseFloat(numericString);
+    } else {
+      numericValue = value;
+    }
+
+    // NaNの場合や数値が0の場合は'¥0'を返す
+    if (isNaN(numericValue) || numericValue === 0) {
+      return '¥0';
+    }
+
     return new Intl.NumberFormat('ja-JP', {
       style: 'currency',
-      currency: 'JPY'
-    }).format(amount);
+      currency: 'JPY',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(numericValue);
   };
   
   /**

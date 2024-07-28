@@ -55,6 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         • 取引日（取引が行われた日付）
         • 宛名（支払いを行った人または組織の名前）
         • 金額（取引における支払いの総額）
+        • 通貨単位（JPY,USDなど）
         • 但し書き（支払いが行われた商品やサービスの取引内容）
         • 発行者名（領収書を発行する事業者の名前）
         • 発行者の住所・連絡先
@@ -146,17 +147,18 @@ async function processWithGPT4(imageUrl: string, prompt: string): Promise<any> {
 
   const jsonPrompt = `Please convert the following text to a JSON object with the following format:
   {
-    "transactionDate": "2023-01-01", // 取引日（取引が行われた日付）
-    "recipient": "株式会社エクセル", // 宛名（支払いを行った人または組織の名前）
-    "amount": "50000", // 金額（取引における支払いの総額）
-    "purpose": "業務用備品購入費として", // 但し書き（支払いが行われた商品やサービスの取引内容の要約）
-    "issuer": "株式会社サンプル商事", // 発行名（領収書を発行する事業者の名前）
-    "issuerAddress": "東京都渋谷区1-1-1", // 発行者の住所・絡先
-    "issuerContact": "03-1234-5678", // 発行者の連絡先
-    "registrationNumber": "123456", // 発行者の登録番号（法人番号など）
-    "taxCategory": "10%", // 税区分（消費税など）
-    "reducedTaxRate": "適用なし", // 軽減税率の適用（該当する場合）
-    "serialNumber": "0001", // 通し番（透明性を高めるために推奨）
+    "transactionDate": "ex - 2023-01-01", // 取引日（取引が行われた日付）
+    "recipient": "ex - 株式会社エクセル", // 宛名（支払いを行った人または組織の名前）
+    "amount": "ex - 50000", // 金額（取引における支払いの総額）半角数字
+    "currency": "ex - JPY", // 通貨単位（JPY,USDなど）
+    "purpose": "ex - 業務用備品購入費として", // 但し書き（支払いが行われた商品やサービスの取引内容の要約）
+    "issuer": "ex - 株式会社サンプル商事", // 発行名（領収書を発行する事業者の名前）
+    "issuerAddress": "ex - 東京都渋谷区1-1-1", // 発行者の住所・絡先
+    "issuerContact": "ex - 03-1234-5678", // 発行者の連絡先
+    "registrationNumber": "ex - 123456", // 発行者の登録番号（法人番号など）
+    "taxCategory": "ex - 10%", // 税区分（消費税など）
+    "reducedTaxRate": "ex - 適用なし", // 軽減税率の適用（該当する場合）
+    "serialNumber": "ex - 0001", // 通し番（透明性を高めるために推奨）
     "noryoshusho": "" // 領収書の写真でない場合には、noryoshushoに写真の詳細を描いてください
   }: ${response1.choices[0].message.content}`;
 

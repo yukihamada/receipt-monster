@@ -1,319 +1,94 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Download, Trash2, Edit2, PlusCircle, Clock } from 'lucide-react';
-import Image from 'next/image';
-import { getLabel } from '../utils/helpers'; // Import getLabel from utils/helpers
-import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase'; // Firestoreのインスタンスをインポート
-import { Receipt } from './types'; // 'Receipt' をここからインポート
+import React, { useState } from 'react';
+import { Receipt } from '../types';
+import { FaReceipt, FaTrash, FaChevronDown, FaChevronUp, FaImage } from 'react-icons/fa';
 
 interface ReceiptListProps {
-  savedReceipts: Receipt[];
+  receipts: Receipt[];
+  onSelectReceipt: (receipt: Receipt) => void;
   deleteReceipt: (id: string) => void;
-  editReceipt: (receipt: Receipt) => Promise<void>; // Type updated
-  getLabel: (key: keyof Receipt) => string;
-  renderValue: (value: any) => string;
-  addTimestamp: (receipt: Receipt) => void;
-  onAddReceiptClick: () => void;
-  isLoading: boolean;
-  uploadProgress: { [key: string]: number };
-  currentLoadingMessage: string; // Added this line
-  currentMessage: string; // Added this line
-  renderLoader: () => React.ReactNode;
-  printReceipt: (receipt: Receipt) => void;
 }
 
-const ReceiptList: React.FC<ReceiptListProps> = ({ savedReceipts, deleteReceipt, editReceipt, getLabel, renderValue, addTimestamp, onAddReceiptClick, isLoading, uploadProgress, currentLoadingMessage, currentMessage, renderLoader }) => {
-  const safeSavedReceipts = savedReceipts || [];
-  const sortedReceipts = [...safeSavedReceipts].sort((a, b) => 
-    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  );
+const ReceiptList: React.FC<ReceiptListProps> = ({ receipts, onSelectReceipt, deleteReceipt }) => {
+  const [expandedReceipt, setExpandedReceipt] = useState<string | null>(null);
+  const [showImage, setShowImage] = useState<string | null>(null);
 
-  const [emptyMessage, setEmptyMessage] = useState('');
-  const [showTip, setShowTip] = useState(false);
-
-  useEffect(() => {
-    const messages = [
-      'レシートがないなんて、財布が軽くて幸せで！',
-      '買い物しなも幸せ？それとゃった？',
-      'レシートゼロ。エコな生活らしいです',
-      'レシートがないのは、宝くじに当たったからですか？',
-      '無レシート生活、始めました？',
-      '空っぽのレシート箱。想像力豊かな買い物の時間です！',
-      'レシートなし、思い出いっぱい？',
-      '今日のテーマは「無駄遣いゼロ」。素晴らしい成果です！',
-      'レシートがないって、実は立派な貯金術かも？',
-      'レシート0枚。今日はバーチャルショッピングの日？'
-    ];
-
-    const changeMessage = () => {
-      const randomIndex = Math.floor(Math.random() * messages.length);
-      setEmptyMessage(messages[randomIndex]);
-    };
-
-    changeMessage();
-    const interval = setInterval(changeMessage, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const formatTimestamp = (timestamp: string) => {
-    const now = new Date();
-    const receiptDate = new Date(timestamp);
-    const diffInMinutes = Math.floor((now.getTime() - receiptDate.getTime()) / (1000 * 60));
-
-    if (diffInMinutes < 60) {
-      return `${diffInMinutes}分前`;
-    } else if (diffInMinutes < 24 * 60) {
-      return `${Math.floor(diffInMinutes / 60)}時間前`;
-    } else if (diffInMinutes < 3 * 24 * 60) {
-      return `${Math.floor(diffInMinutes / (24 * 60))}日前`;
-    } else {
-      return receiptDate.toLocaleDateString();
-    }
+  const toggleReceiptDetails = (id: string) => {
+    setExpandedReceipt(expandedReceipt === id ? null : id);
   };
 
-  const renderReceiptContent = (receipt: Receipt) => (
-    <>
-      {receipt.imageUrl && (
-        <div className="mb-4 flex justify-center">
-          <Image 
-            src={receipt.imageUrl}
-            alt="Receipt image"
-            width={200}
-            height={200}
-            className="rounded-lg shadow-md transition-transform duration-300 hover:scale-105 max-h-48 object-contain"
-            style={{ transform: `rotate(${receipt.imageOrientation}deg)`, width: 'auto', height: 'auto' }}
-          />
-        </div>
-      )}
-      <div className="grid grid-cols-1 gap-4">
-        {Object.entries(receipt)
-          .filter(([key]) => !['id', 'timestamp', 'issuer', 'amount', 'imageUrl', 'imageOrientation', 'noryoshusho', 'userId', 'hash'].includes(key))
-          .map(([key, value]) => (
-            <div key={`${receipt.id}-${key}`} className="flex flex-col mb-2 p-2 bg-gray-50 rounded-lg shadow-sm">
-              <span className="font-semibold text-gray-700">{getLabel(key as keyof Receipt)}:</span>
-              <span className="text-sm text-gray-600 mt-1 text-right">{value ? renderValue(value) : '値がありません'}</span>
+  const toggleImage = (imageUrl: string | null) => {
+    setShowImage(imageUrl);
+  };
+
+  return (
+    <div className="container mx-auto p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {receipts.map((receipt) => (
+          <div key={receipt.id} className="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center">
+                  <FaReceipt className="text-blue-500 mr-2" />
+                  <h3 className="text-lg font-semibold">{receipt.issuer}</h3>
+                </div>
+                <button
+                  onClick={() => toggleReceiptDetails(receipt.id)}
+                  className="btn btn-sm btn-ghost"
+                >
+                  {expandedReceipt === receipt.id ? <FaChevronUp /> : <FaChevronDown />}
+                </button>
+              </div>
+              <p className="text-gray-600">{receipt.transactionDate}</p>
+              <p className="text-xl font-bold mt-2">{receipt.amount}円</p>
             </div>
-          ))}
+            {expandedReceipt === receipt.id && (
+              <div className="bg-gray-50 p-4 border-t">
+                <p>発行者: {receipt.issuer}</p>
+                <p>住所: {receipt.issuerAddress}</p>
+                <p>取引日: {receipt.transactionDate}</p>
+                <p>金額: {receipt.amount}円</p>
+                <p>税区分: {receipt.taxCategory}</p>
+                <p>軽減税率: {receipt.reducedTaxRate}</p>
+                <p>目的: {receipt.purpose}</p>
+                <p>登録番号: {receipt.registrationNumber}</p>
+                <p>シリアル番号: {receipt.serialNumber}</p>
+                <p>登録日: {receipt.registrationDate}</p>
+                {receipt.note && <p>メモ: {receipt.note}</p>}
+                {receipt.imageUrl && (
+                  <button
+                    onClick={() => receipt.imageUrl && toggleImage(receipt.imageUrl)}
+                    className="btn btn-sm btn-primary mt-2"
+                  >
+                    <FaImage className="mr-1" /> 画像を表示
+                  </button>
+                )}
+              </div>
+            )}
+            <div className="bg-gray-100 px-4 py-2 flex justify-end">
+              <button
+                onClick={() => deleteReceipt(receipt.id)}
+                className="btn btn-sm btn-ghost text-red-500"
+              >
+                <FaTrash className="mr-1" /> 削除
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
-    </>
-  );
+      
+      {receipts.length === 0 && (
+        <p className="text-center text-gray-500 my-8">表示するレシートがありません。</p>
+      )}
 
-  const handleDeleteReceipt = (id: string) => {
-    if (confirm('本当にこのレシートを削除しますか？')) {
-      deleteReceipt(id);
-    }
-  };
-
-  const addSolanaTransaction = useCallback(async (receipt: Receipt) => {
-    if (receipt.hash && !receipt.solanaTransaction) {
-      try {
-        const response = await fetch('/api/addTimestampProgram', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ hash: receipt.hash }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Solanaトランザクションの追加中にエラーが発生しました');
-        }
-
-        const data = await response.json();
-        const updatedReceipt = { ...receipt, solanaTransaction: data.transactionId };
-
-        await editReceipt(updatedReceipt);
-        console.log('Solanaトランザクションが正常に追加されました');
-      } catch (error) {
-        console.error('Solanaトランザクションの追加中にエラーが発生しました:', error);
-      }
-    }
-  }, [editReceipt]);
-
-  useEffect(() => {
-    savedReceipts.forEach(receipt => {
-      addSolanaTransaction(receipt);
-    });
-  }, [savedReceipts, addSolanaTransaction]); // 依存配列にsavedReceiptsとaddSolanaTransactionを追加
-
-  return (
-    <>
-      {isLoading && renderLoader()}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto p-4 bg-gray-50 rounded-lg shadow-lg"
-      >
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 flex items-center justify-center">
-          <PlusCircle className="mr-2" />
-          保存されたレシート
-        </h2>
-        {sortedReceipts.length > 10 && (
-          <UpgradeBanner receiptCount={sortedReceipts.length} />
-        )}
-        {sortedReceipts.length === 0 ? (
-          <EmptyState emptyMessage={emptyMessage} onAddReceiptClick={onAddReceiptClick} />
-        ) : (
-          <ul className="space-y-6">
-            {sortedReceipts.map((receipt) => (
-              <ReceiptItem
-                key={receipt.id}
-                receipt={receipt}
-                editReceipt={editReceipt}
-                deleteReceipt={handleDeleteReceipt}
-                renderReceiptContent={renderReceiptContent}
-                renderValue={renderValue}
-                getLabel={getLabel}
-                addTimestamp={addTimestamp}
-              />
-            ))}
-          </ul>
-        )}
-      </motion.div>
-      {sortedReceipts.length > 0 && (
-        <div className="text-center mt-6">
-          <a
-            href="/path/to/download"
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center"
-            download
-          >
-            <Download className="mr-2" />
-            データダウンロード
-          </a>
+      {showImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => toggleImage(null)}>
+          <div className="bg-white p-2 rounded-lg max-w-3xl max-h-3xl">
+            <img src={showImage} alt="レシート画像" className="max-w-full max-h-full object-contain" />
+          </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
-
-const UpgradeBanner = ({ receiptCount }: { receiptCount: number }) => (
-  <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-r-lg shadow" role="alert">
-    <p className="font-bold">有料プランへのアップグレードご検討ください</p>
-    <p>現在{receiptCount}件レシートが保存されています。有料プランにアップグレードすると、最大1000件まで保存できます。</p>
-  </div>
-);
-
-const EmptyState = ({ emptyMessage, onAddReceiptClick }: { emptyMessage: string, onAddReceiptClick: () => void }) => (
-  <AnimatePresence mode="wait">
-    <motion.div
-      key={emptyMessage}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5 }}
-      className="p-6 rounded-lg shadow-lg bg-white text-center"
-    >
-      <p className="text-xl font-medium text-gray-700 mb-4">{emptyMessage}</p>
-      <AddReceiptButton onClick={onAddReceiptClick} />
-    </motion.div>
-  </AnimatePresence>
-);
-
-const AddReceiptButton = ({ onClick }: { onClick: () => void }) => (
-  <motion.button
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full inline-flex items-center"
-    onClick={onClick}
-  >
-    <PlusCircle className="mr-2" />
-    新しいレシートの追加
-  </motion.button>
-);
-
-const ReceiptItem = ({ receipt, editReceipt, deleteReceipt, renderReceiptContent, renderValue, getLabel, addTimestamp }: {
-  receipt: Receipt;
-  editReceipt: (receipt: Receipt) => Promise<void>;
-  deleteReceipt: (id: string) => void;
-  renderReceiptContent: (receipt: Receipt) => React.ReactNode;
-  renderValue: (value: any) => string;
-  getLabel: (key: keyof Receipt) => string;
-  addTimestamp: (receipt: Receipt) => void;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const addCertificateOnServer = async (receipt: Receipt) => {
-    try {
-      const response = await fetch('/api/generate-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          fileHash: receipt.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('サーバーでエラーが発しした');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'certificate.pdf';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      console.log('証明書が正常取得されました');
-    } catch (error) {
-      console.error('証明書の取得中にエラーが発生ました:', error);
-    }
-  };
-
-  return (
-    <motion.li
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="bg-white p-6 rounded-lg shadow-md relative hover:shadow-lg transition-shadow duration-300"
-      style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 20px), 0 100%)' }}
-    >
-      <div className="absolute top-2 right-2 space-x-2 flex items-start">
-        <ActionButton icon={Edit2} onClick={() => editReceipt(receipt)} tooltip="編集" />
-        <ActionButton icon={Trash2} onClick={() => deleteReceipt(receipt.id)} tooltip="削除" />
-        <ActionButton icon={Download} onClick={() => addCertificateOnServer(receipt)} tooltip="証��書を取得" />
-      </div>
-      <h3 className="text-lg font-semibold mb-4">{receipt.issuer || '店舗名な'}</h3>
-      <div className="flex justify-between">
-        <span className="font-medium">金額:</span>
-        <span>{renderValue(receipt.amount)}</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="font-medium">発行者:</span>
-        <span>{renderValue(receipt.issuer)}</span>
-      </div>
-      <button
-        className="text-blue-500 mt-2 underline"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? '詳細を隠す' : '詳細を見る'}
-      </button>
-      {isOpen && (
-        <div className="mt-4 space-y-2">
-          {renderReceiptContent(receipt)}
-        </div>
-      )}
-    </motion.li>
-  );
-};
-
-const ActionButton = ({ icon: Icon, onClick, tooltip }: { icon: React.ElementType, onClick: () => void, tooltip: string }) => (
-  <motion.button
-    whileHover={{ scale: 1.1 }}
-    whileTap={{ scale: 0.9 }}
-    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
-    onClick={onClick}
-    title={tooltip}
-  >
-    <Icon size={16} />
-  </motion.button>
-);
 
 export default ReceiptList;

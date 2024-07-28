@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "レシートモンスター",
+  "version": "1.0",
+  "description": "レシートモンスターにレシートを食べさせて、経費管理を簡単に！",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "https://amazon.co.jp/*",
+    "https://www.amazon.co.jp/*",
+    "https://order.my.rakuten.co.jp/*",
+    "https://doceator.io/*"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "favicon.ico"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.amazon.co.jp/gp/css/order-history*",
+        "https://order.my.rakuten.co.jp/*"
+      ],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "16": "favicon.ico",
+    "48": "favicon.ico",
+    "128": "favicon.ico"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  }
+}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where } from 'firebase/firestore';
 import { app } from '../firebase';
-import { Receipt } from '../components/types';
+import { Receipt } from '../types';
 
 const db = getFirestore(app);
 
@@ -15,8 +15,8 @@ export const useReceipts = (userId: string | null) => {
     fetchReceipts();
   }, [userId]);
 
-  const fetchReceipts = useCallback(async () => {
-    if (!userId) return;
+  const fetchReceipts = useCallback(async (): Promise<Receipt[]> => {
+    if (!userId) return [];
     try {
       const q = query(collection(db, 'receipts'), where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
@@ -26,14 +26,21 @@ export const useReceipts = (userId: string | null) => {
       } as Receipt));
       setSavedReceipts(fetchedReceipts);
       updateTotalAmount(fetchedReceipts);
+      return fetchedReceipts;
     } catch (error) {
       console.error('Failed to load receipts from Firestore:', error);
+      return [];
     }
   }, [userId]);
 
   const updateTotalAmount = (receipts: Receipt[]) => {
-    const total = receipts.reduce((sum, receipt) => sum + Number(receipt.amount), 0);
-    setTotalAmount(total);
+    const newTotalAmount = receipts.reduce((sum, receipt) => {
+      const amount = typeof receipt.amount === 'string' 
+        ? parseFloat(receipt.amount.replace(/[^\d.]/g, ''))
+        : typeof receipt.amount === 'number' ? receipt.amount : 0;
+      return isNaN(amount) ? sum : sum + amount;
+    }, 0);
+    setTotalAmount(newTotalAmount);
   };
 
   const handleImageUpload = async (file: File) => {
@@ -115,8 +122,16 @@ export const useReceipts = (userId: string | null) => {
   };
 
   const printReceipt = (receipt: Receipt) => {
-    // 印刷ロジックの実装（必要に応じて）
+    // 印刷ロジックの実（必要に応じて）
     console.log('Printing receipt:', receipt);
+  };
+
+  const uploadReceipt = async (userId: string, file: File) => {
+    // レシートアップロードのロジックを実装
+  };
+
+  const addReceipt = async (newReceipt: Receipt) => {
+    // レシートを追加するロジックを実装
   };
 
   return {
@@ -127,6 +142,8 @@ export const useReceipts = (userId: string | null) => {
     deleteReceipt,
     editReceipt,
     printReceipt,
-    fetchReceipts
+    fetchReceipts,
+    uploadReceipt,
+    addReceipt
   };
 };
