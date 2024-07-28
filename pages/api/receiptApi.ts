@@ -1,4 +1,4 @@
-import { Receipt } from '../../components/types';
+import { Receipt } from '../../types';
 
 const API_BASE_URL = '/api';
 

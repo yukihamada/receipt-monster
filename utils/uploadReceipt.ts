@@ -14,15 +14,28 @@ export const uploadReceipt = async (file: File, userId: string): Promise<Receipt
     
     // レシートデータを作成して返す
     const newReceipt: Receipt = {
-      id: Date.now().toString(), // 一時的なIDとして現在のタイムスタンプを使用
-      name: file.name, // ファイル名を使用
-      amount: 0, // 仮の値として0を設定
-      category: '', // 仮の空文字列を設定
-      date: new Date().toISOString(), // 現在の日付を設定
-      memo: '', // 仮の空文字列を設定
+      transactionDate: new Date().toISOString(),
+      recipient: '',
+      amount: '0',
+      currency: '',
+      purpose: '',
+      hash: '',
       imageUrl: downloadURL,
-      timestamp: new Date().toISOString(), // 現在のタイムスタンプを追加
-      issuer: '', // 仮空文字列を設定
+      issuer: '',
+      issuerAddress: '',
+      issuerContact: '',
+      noryoshusho: '',
+      reducedTaxRate: 'false', // 文字列として設定
+      registrationNumber: '',
+      serialNumber: '',
+      taxCategory: '',
+      uploadTime: new Date().toISOString(),
+      date: new Date().toISOString(),
+      id: Date.now().toString(),
+      name: file.name,
+      category: '',
+      memo: '',
+      timestamp: new Date().toISOString(),
     };
 
     return newReceipt;

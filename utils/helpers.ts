@@ -1,4 +1,4 @@
-import { Receipt } from '../components/types'; // Receipt 型をインポート
+import { Receipt } from '../types'; // Receipt 型をインポート
 
 export const getLabel = (key: keyof Receipt): string => {
   const labels: { [key in keyof Receipt]?: string } = {
@@ -7,7 +7,6 @@ export const getLabel = (key: keyof Receipt): string => {
     amount: '金額',
     issuer: '発行者',
     imageUrl: '画像URL',
-    imageOrientation: '画像の向き',
     noryoshusho: '領収書番号',
     category: 'カテゴリー',
     registrationNumber: '登録番号', // 追加のフィールド

@@ -10,12 +10,13 @@ import { Receipt } from '../types';
 import { uploadReceipt } from '../utils/uploadReceipt';
 import { useMediaQuery } from 'react-responsive';
 import { useRealTimeReceipts } from '../hooks/useRealTimeReceipts';
-import { Button, Grid, Typography, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Button, Grid, Typography, TextField, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, DialogContentText } from '@mui/material';
 import { styled } from '@mui/system';
 import { Theme, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { db } from '../firebase';
 import { collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import CloseIcon from '@mui/icons-material/Close';
 
 const StyledButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(1, 2),
@@ -46,6 +47,9 @@ const theme = createTheme({
   },
 });
 
+// 新しい型定義を追加
+type ReceiptWithId = Receipt & { id: string };
+
 const AuthenticatedHome: React.FC = () => {
   const [isClient, setIsClient] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null);
@@ -63,12 +67,13 @@ const AuthenticatedHome: React.FC = () => {
     transactionDate: '2024-07-26',
     amount: '1900',
     taxCategory: '',
-    reducedTaxRate: '',
     purpose: '',
     registrationNumber: '',
     serialNumber: '',
     imageUrl: ''
   });
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [previewImages, setPreviewImages] = useState<{ file: File; preview: string | null; uploaded: boolean }[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
@@ -103,12 +108,13 @@ const AuthenticatedHome: React.FC = () => {
 
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
+    setSelectedReceipt(null);
   }, []);
 
   const handleSelectReceipt = useCallback((receipt: Receipt) => {
     setSelectedReceipt(receipt);
-    handleOpenModal();
-  }, [handleOpenModal]);
+    setIsModalOpen(true);
+  }, []);
 
   const handleSearch = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -147,7 +153,7 @@ const AuthenticatedHome: React.FC = () => {
     }
 
     console.warn(`未知の日付形式です: ${dateString}`);
-    return new Date().toISOString().split('T')[0];  // 未知の形式の場合は現在の日付を返す
+    return new Date().toISOString().split('T')[0];  // 未知形式の場合は現在の日付を返す
   };
 
   const handleUpload = useCallback(async (files: File[]) => {
@@ -155,6 +161,16 @@ const AuthenticatedHome: React.FC = () => {
 
     setIsUploading(true);
     setUploadProgress(0);
+
+    // プレビュー画像を設定
+    const newPreviews = files.map(file => ({
+      file,
+      preview: file.type !== 'image/heic' && !file.name.toLowerCase().endsWith('.heic')
+        ? URL.createObjectURL(file)
+        : null,
+      uploaded: false
+    }));
+    setPreviewImages(newPreviews);
 
     try {
       for (let i = 0; i < files.length; i++) {
@@ -184,7 +200,7 @@ const AuthenticatedHome: React.FC = () => {
         }
 
         const result = await response.json();
-        console.log('処理結果:', result);
+        console.log('APIからの生のレスポンス:', result);  // デバッグ用
 
         // レシートデータをReceipt型に変換
         const newReceipt: Receipt = {
@@ -212,20 +228,30 @@ const AuthenticatedHome: React.FC = () => {
           purpose: result.purpose || '不明',
         };
 
-        console.log('新しいレシートデータ:', newReceipt);  // デバッグ用
+        console.log('フォーマット後のレシートデータ:', newReceipt);  // デバッグ用
 
         // Firebaseにレシートを追加
         const docRef = await addDoc(collection(db, 'receipts'), newReceipt);
         console.log('レシートが追加されました。ID:', docRef.id);
 
-        setUploadProgress(((i + 1) / files.length) * 100);
+        // アップロード完了を示し、HEICファイルの場合はアップロード後の画像URLを設定
+        setPreviewImages(prev => prev.map((img, index) => 
+          index === i ? { ...img, uploaded: true, preview: result.imageUrl || img.preview } : img
+        ));
+
+        // 進捗をより細かく更新
+        const updateProgress = (progress: number) => {
+          setUploadProgress(prev => Math.min(prev + progress, ((i + 1) / files.length) * 100));
+        };
+
+        for (let j = 0; j < 50; j++) {
+          setTimeout(() => updateProgress(0.4), j * 40);
+        }
       }
     } catch (error) {
       console.error('アップロードエラー:', error);
-      alert(`アップロードに失敗しました: ${error.message}`);
     } finally {
       setIsUploading(false);
-      setUploadProgress(0);
     }
   }, [isClient, user]);
 
@@ -305,6 +331,28 @@ const AuthenticatedHome: React.FC = () => {
       alert('レシートの追加に失敗しました');
     }
   }, [newReceipt, user, handleCloseModal]);
+
+  const handleOpenImageModal = useCallback(() => {
+    setIsImageModalOpen(true);
+  }, []);
+
+  const handleCloseImageModal = useCallback(() => {
+    setIsImageModalOpen(false);
+  }, []);
+
+  const renderReceiptDetails = (receipt: Receipt) => {
+    return (
+      <div>
+        <p><strong>発行者:</strong> {receipt.issuer}</p>
+        <p><strong>日付:</strong> {receipt.transactionDate}</p>
+        <p><strong>額:</strong> {receipt.amount} {receipt.currency}</p>
+        <p><strong>目的:</strong> {receipt.purpose}</p>
+        <p><strong>カテゴリ:</strong> {receipt.category}</p>
+        {receipt.VAT_Total && <p><strong>VAT合計:</strong> {receipt.VAT_Total}</p>}
+        {receipt.Subtotal && <p><strong>小計:</strong> {receipt.Subtotal}</p>}
+      </div>
+    );
+  };
 
   if (!isClient) {
     return null; // または適切なローディング表示
@@ -408,7 +456,7 @@ const AuthenticatedHome: React.FC = () => {
           >
             <input {...getInputProps()} />
             <FaFileInvoice className="mx-auto text-5xl text-gray-400 mb-4" />
-            <p className="text-lg mb-4">ここにファルをドロップするか、クリックしてアップロード</p>
+            <p className="text-lg mb-4">こ���にファルをドロップするか、クリックしてアップロード</p>
             <button
               onClick={handleButtonClick}
               className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition duration-300 ease-in-out"
@@ -418,9 +466,36 @@ const AuthenticatedHome: React.FC = () => {
           </div>
           {isUploading && (
             <div className="mt-4">
-              <p className="mb-2">アップロード中... {uploadProgress.toFixed(0)}%</p>
+              <p className="mb-2">アップロード中... {uploadProgress.toFixed(1)}%</p>
               <div className="w-full bg-gray-200 rounded-full h-2.5">
                 <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
+              </div>
+            </div>
+          )}
+          {previewImages.length > 0 && (
+            <div className="mt-4">
+              <p>アップロード中の画像:</p>
+              <div className="flex flex-wrap">
+                {previewImages.map((img, index) => (
+                  <div key={index} className="relative w-24 h-24 m-2">
+                    {img.preview ? (
+                      <img src={img.preview} alt={`プレビュー ${index + 1}`} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
+                        HEIC
+                      </div>
+                    )}
+                    {img.uploaded ? (
+                      <div className="absolute inset-0 flex items-center justify-center bg-green-500 bg-opacity-50 text-white">
+                        ✓
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 text-white">
+                        ⟳
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -435,10 +510,11 @@ const AuthenticatedHome: React.FC = () => {
             <ReportView receipts={receipts} />
           ) : (
             <ReceiptList
-              receipts={receipts.filter((receipt: Receipt) =>
-                receipt.issuer?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+              receipts={receipts.filter((receipt: Receipt): receipt is ReceiptWithId =>
+                receipt.id !== undefined &&
+                (receipt.issuer?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                 receipt.amount?.toString().includes(searchQuery) ||
-                receipt.transactionDate?.includes(searchQuery)
+                receipt.transactionDate?.includes(searchQuery))
               )}
               onSelectReceipt={handleSelectReceipt}
               deleteReceipt={handleDeleteReceipt}
@@ -570,6 +646,42 @@ const AuthenticatedHome: React.FC = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <Dialog open={isModalOpen} onClose={handleCloseModal} maxWidth="md" fullWidth>
+          <DialogTitle>
+            レシートの詳細
+            <IconButton
+              aria-label="close"
+              onClick={handleCloseModal}
+              sx={{ position: 'absolute', right: 8, top: 8 }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            {selectedReceipt && renderReceiptDetails(selectedReceipt)}
+            {selectedReceipt && selectedReceipt.imageUrl && (
+              <img 
+                src={selectedReceipt.imageUrl} 
+                alt="レシート画像" 
+                style={{ maxWidth: '100%', cursor: 'pointer' }} 
+                onClick={handleOpenImageModal}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isImageModalOpen} onClose={handleCloseImageModal} maxWidth="xl" fullWidth>
+          <DialogContent>
+            {selectedReceipt && (
+              <img 
+                src={selectedReceipt.imageUrl} 
+                alt="レシート画像（拡大）" 
+                style={{ width: '100%', height: 'auto' }} 
+              />
+            )}
+          </DialogContent>
+        </Dialog>
 
         <div>
           <button onClick={() => handleSort('registrationDate')}>

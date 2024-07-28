@@ -51,11 +51,24 @@ export const useReceipts = (userId: string | null) => {
     const pendingReceipt: Receipt = {
       id: uploadId,
       timestamp: new Date().toISOString(),
+      uploadTime: new Date().toISOString(), // Added
+      date: new Date().toISOString(), // Added
       imageUrl: URL.createObjectURL(file),
-      imageOrientation: 0,
       userId,
-      amount: 0,
-      issuer: '登録中'
+      amount: '0',
+      issuer: '登録中',
+      transactionDate: new Date().toISOString(),
+      recipient: '未定',
+      currency: 'JPY',
+      purpose: '未定',
+      hash: '',
+      issuerAddress: '',
+      issuerContact: '',
+      noryoshusho: 'false',
+      reducedTaxRate: 'false',
+      registrationNumber: '',
+      serialNumber: '',
+      taxCategory: '',
     };
     setSavedReceipts(prev => [pendingReceipt, ...prev]);
 
@@ -110,12 +123,17 @@ export const useReceipts = (userId: string | null) => {
 
   const editReceipt = async (updatedReceipt: Receipt) => {
     try {
-      await updateDoc(doc(db, 'receipts', updatedReceipt.id), updatedReceipt);
-      const updatedReceipts = savedReceipts.map(r => 
-        r.id === updatedReceipt.id ? updatedReceipt : r
-      );
-      setSavedReceipts(updatedReceipts);
-      updateTotalAmount(updatedReceipts);
+      const { id, ...receiptWithoutId } = updatedReceipt;
+      if (id) {
+        await updateDoc(doc(db, 'receipts', id), receiptWithoutId);
+        const updatedReceipts = savedReceipts.map(r => 
+          r.id === id ? updatedReceipt : r
+        );
+        setSavedReceipts(updatedReceipts);
+        updateTotalAmount(updatedReceipts);
+      } else {
+        console.error('レシートIDが見つかりません');
+      }
     } catch (error) {
       console.error('レシートの更新中にエラーが発生しました:', error);
     }

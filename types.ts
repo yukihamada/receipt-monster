@@ -15,7 +15,12 @@ export interface Receipt {
   serialNumber: string;
   taxCategory: string;
   uploadTime: string;
-  address?: string; // Added address property
+  note?: string;
+  date: string;
+  items?: {
+    name: string;
+    price: string;
+  }[];
   
   id?: string;
   name?: string;
@@ -24,6 +29,9 @@ export interface Receipt {
   memo?: string;
   timestamp?: string;
   userId?: string;
+  address?: string;
+  VAT_Total?: string;
+  Subtotal?: string;
 }
 
 export interface ReceiptItem {
