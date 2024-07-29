@@ -554,6 +554,10 @@ const AuthenticatedHome: React.FC = () => {
               deleteReceipt={handleDeleteReceipt}
               selectedReceiptIds={selectedReceiptIds}
               onSelectReceiptIds={setSelectedReceiptIds}
+              updateReceipt={(updatedReceipt) => {
+                // ここにレシート更新のロジックを実装
+                console.log('レシートを更新:', updatedReceipt);
+              }}
             />
           )}
         </motion.div>
@@ -721,7 +725,7 @@ const AuthenticatedHome: React.FC = () => {
 // カテゴリを推測する関数（実装が必）
 function getCategory(purpose: string): string {
   // 目的に基づいてカテゴリを推測するロジクを実装
-  return '��分類'; // デフォルト値
+  return '分類'; // デフォルト値
 }
 
 export default AuthenticatedHome;

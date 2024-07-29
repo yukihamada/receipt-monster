@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
 import { fileTypeFromBuffer } from 'file-type';
 import { PDFDocument } from 'pdf-lib';
-import sharp from 'sharp';
 import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
@@ -50,12 +49,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Cloudflareに画像をアップロード
         const imageUrl = await uploadToCloudflare(processedImage, image.originalFilename ?? 'default_filename.jpg');
 
-        const prompt = `以下のレシートの画像から以下の情報を抽出してください:
+        const prompt = `下のレシートの画から以下の情報を抽出してください:
 
         • 取引日（取引が行われた日付）
         • 宛名（支払いを行った人または組織の名前）
         • 金額（取引における支払いの総額）
-        • 通貨単位（JPY,USDなど）
+        • 通貨単位（JPY,USDど）
         • 但し書き（支払いが行われた商品やサービスの取引内容）
         • 発行者名（領収書を発行する事業者の名前）
         • 発行者の住所・連絡先
@@ -63,8 +62,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         • 税区分（消費税など）
         • 軽減税率の適用（該当する場合）
         • 通し番号（透明性を高めるために推奨）        
-        領収書の写真でない場合には、以下のように返答してください。
-        • [NORYOSHUSHO]: 領収書の写真ではありませんと描いた上で写真の中身を詳に説明してくださ��。
+        領収書の写真でない場合には、以下のように返答してくださ。
+        • [NORYOSHUSHO]: 領収書の写真ではありませんと描いた上で写真の中身を詳に説明してくださ。
         `;
 
         const result = await processWithGPT4(imageUrl, prompt);
@@ -89,9 +88,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 const convertHeicToJpeg = async (inputBuffer: Buffer): Promise<Buffer> => {
   try {
-    return await sharp(inputBuffer)
-      .toFormat('jpeg')
-      .toBuffer(); // 修正: toDataURL() を toBuffer() に変更
+    // HEICからJPEGへの変換ロジックをここに実装する
+    // 例: 外部ライブラリを使用するか、別のAPIを呼び出す
+    console.warn('HEIC to JPEG conversion is not implemented. Returning original buffer.');
+    return inputBuffer;
   } catch (error) {
     console.error('Error processing image:', error);
     throw new Error('HEIC画像の変換中にエラーが発生しました: ' + (error as Error).message);

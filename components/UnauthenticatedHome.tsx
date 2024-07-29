@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 const UnauthenticatedHome: React.FC = () => {
@@ -11,40 +12,52 @@ const UnauthenticatedHome: React.FC = () => {
   ];
 
   return (
-    <div className="text-center max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6">レシートモンスターで経費管理を革新しよう！</h2>
-      <p className="text-xl mb-8">面倒な経費管理をスマートに。今すぐ始めましょう。</p>
+    <div className="max-w-6xl mx-auto p-6 bg-gradient-to-b from-blue-50 to-white">
+      <div className="text-center mb-12">
+        <Image
+          src="/leaf/eating.webp"
+          alt="レシートモンスター"
+          width={200}
+          height={200}
+          className="mx-auto mb-6"
+        />
+        <h1 className="text-4xl font-bold mb-4 text-blue-800">レシートモンスターで経費管理を革新しよう！</h1>
+        <p className="text-xl mb-8 text-gray-600">面倒な経費管理をスマートに。今すぐ始めましょう。</p>
+        <Link href="/signup" className="btn btn-primary btn-lg inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-colors duration-300 text-lg">
+          今すぐ無料で始める
+        </Link>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
         {features.map((feature, index) => (
           <motion.div
             key={index}
-            className="bg-white p-6 rounded-lg shadow-md"
-            whileHover={{ scale: 1.05 }}
+            className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+            whileHover={{ scale: 1.03 }}
             transition={{ type: 'spring', stiffness: 300 }}
           >
-            <div className="text-4xl mb-4">{feature.icon}</div>
-            <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-            <p>{feature.description}</p>
+            <div className="text-5xl mb-4">{feature.icon}</div>
+            <h3 className="text-2xl font-semibold mb-2 text-blue-800">{feature.title}</h3>
+            <p className="text-gray-600">{feature.description}</p>
           </motion.div>
         ))}
       </div>
 
-      <div className="mb-12">
-        <h3 className="text-2xl font-bold mb-4">今なら1ヶ月無料トライアル実施中！</h3>
-        <p className="text-lg mb-6">
+      <div className="mb-16 bg-blue-100 p-8 rounded-2xl shadow-md">
+        <h3 className="text-3xl font-bold mb-4 text-blue-800">今なら1ヶ月無料トライアル実施中！</h3>
+        <p className="text-xl mb-6 text-blue-700">
           会員登録後、1ヶ月間すべての機能を無料でお試しいただけます。<br />
           この機会にぜひレシートモンスターの便利さを体験してください。
         </p>
+        <Link href="/signup" className="btn btn-secondary btn-lg inline-block bg-white text-blue-600 font-bold py-3 px-8 rounded-full border-2 border-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-300 text-lg">
+          無料トライアルを始める
+        </Link>
       </div>
 
-      <div className="space-y-4">
-        <Link href="/signup" className="btn btn-primary btn-lg block w-full max-w-md mx-auto">
-          今すぐ無料で始める
-        </Link>
-        <p className="text-sm">
+      <div className="text-center">
+        <p className="text-lg text-gray-600 mb-4">
           すでにアカウントをお持ちの方は
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-blue-600 hover:underline ml-1 font-semibold">
             こちらからログイン
           </Link>
         </p>

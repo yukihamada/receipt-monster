@@ -5,6 +5,7 @@ export interface Receipt {
   currency: string;
   purpose: string;
   hash: string;
+  solanaTransactionHash?: string; // Solanaトランザクションハッシュを追加
   imageUrl: string;
   issuer: string;
   issuerAddress: string;
@@ -20,6 +21,7 @@ export interface Receipt {
   items?: {
     name: string;
     price: string;
+    quantity: number;
   }[];
   
   id?: string;
